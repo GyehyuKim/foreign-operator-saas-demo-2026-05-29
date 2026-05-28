@@ -397,6 +397,131 @@ button {
 
 .hero-cta-row { display: flex; justify-content: flex-end; }
 
+.hero-cta,
+.workflow-main-btn,
+.workflow-secondary-btn {
+  min-height: 42px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0 14px;
+  transition: transform .12s, background .12s, border-color .12s, color .12s;
+}
+
+.hero-cta,
+.workflow-main-btn {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-cta:hover,
+.workflow-main-btn:hover { transform: translateY(-1px); }
+
+.workflow-secondary-btn {
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text-2);
+}
+
+.workflow-secondary-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+
+.workflow-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.workflow-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.workflow-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-1);
+}
+
+.workflow-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 4px;
+}
+
+.workflow-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.workflow-step {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  padding: 10px 11px;
+  min-height: 78px;
+}
+
+.workflow-step.active {
+  border-color: var(--accent-bg);
+  background: var(--accent-bg);
+}
+
+.step-num {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 6px;
+}
+
+.workflow-step.active .step-num { color: var(--accent-text); }
+
+.step-copy {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+
+.workflow-step.active .step-copy { color: var(--text-1); }
+
+.workflow-step strong {
+  display: block;
+  font-size: 13px;
+  color: var(--text-1);
+  margin-bottom: 2px;
+}
+
+.workflow-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.workflow-result {
+  font-size: 12px;
+  color: var(--text-2);
+  background: var(--surface-alt);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+
+.workflow-result strong { color: var(--text-1); }
+
 /* ─────────────────────────────────────────────
    SUMMARY CARDS
 ───────────────────────────────────────────── */
@@ -981,10 +1106,41 @@ footer {
           </div>
           <div class="hero-meta">
             <div class="hero-cta-row">
-              <button class="hero-cta" id="primary-cta" type="button">문서 패키지 시작</button>
+              <button class="hero-cta" id="primary-cta" type="button">실행안 생성</button>
             </div>
             <div class="hero-note" id="hero-note">--</div>
           </div>
+        </section>
+
+        <section class="workflow-panel" id="workflow-panel" aria-labelledby="workflow-title">
+          <div class="workflow-head">
+            <div>
+              <div class="workflow-title" id="workflow-title">다음 스텝: 실행안 생성</div>
+              <div class="workflow-desc">지역과 운영 유형을 고른 뒤 버튼을 누르면, 이 조합에 맞는 문서 패키지와 지원센터 커버리지가 생성됩니다.</div>
+            </div>
+          </div>
+          <div class="workflow-steps">
+            <div class="workflow-step active">
+              <div class="step-num">STEP 1</div>
+              <strong>지역 선택 완료</strong>
+              <div class="step-copy">현재 선택된 경기도 시군 기준으로 수요가 계산됩니다.</div>
+            </div>
+            <div class="workflow-step active">
+              <div class="step-num">STEP 2</div>
+              <strong>운영 유형 선택 완료</strong>
+              <div class="step-copy">고시원·쉐어하우스 / 원룸·장기임대 / 단기숙박업 중 하나를 고릅니다.</div>
+            </div>
+            <div class="workflow-step" id="workflow-step-generate">
+              <div class="step-num">STEP 3</div>
+              <strong>실행안 생성</strong>
+              <div class="step-copy">누르면 문서 패키지, 지원센터 목록, 우선 실행 제안이 한 번에 갱신됩니다.</div>
+            </div>
+          </div>
+          <div class="workflow-actions">
+            <button class="workflow-main-btn" id="generate-btn" type="button">실행안 생성</button>
+            <button class="workflow-secondary-btn" id="jump-docs-btn" type="button">문서 패키지로 이동</button>
+          </div>
+          <div class="workflow-result" id="workflow-result">지역과 운영 유형을 선택한 뒤 <strong>실행안 생성</strong>을 누르세요. 생성되면 아래 문서 패키지와 지원센터 카드가 현재 조건에 맞게 갱신됩니다.</div>
         </section>
 
         <!-- Summary cards -->
@@ -1242,6 +1398,7 @@ const state = {
   density: localStorage.getItem('gfr_density') || 'comfortable',
   enabledSources: new Set(SOURCES.map(s => s.id)),
   checkedDocs: new Set(),
+  generated: localStorage.getItem('gfr_generated') === '1',
 };
 
 /* ──────────────────────────────────────────────────────────────
@@ -1405,6 +1562,20 @@ function updateAll() {
     : '외국인 주민(복지)센터 현황이 꺼져 있어 공백 점수는 보수적으로 계산됩니다.';
   document.getElementById('kpi-caption').innerHTML =
     `<strong>왜 지금 이 화면인가?</strong> 수요 점수는 "어디에 먼저 들어가야 하는가"를, 커버리지 공백은 "운영자가 혼자 처리하기 어려운 구간이 어디인가"를 보여줍니다. 아래 문서 패키지는 그 판단을 바로 실행으로 옮기기 위한 체크리스트입니다.`;
+
+  const workflowResult = document.getElementById('workflow-result');
+  const workflowStep = document.getElementById('workflow-step-generate');
+  const generateBtn = document.getElementById('generate-btn');
+  if (state.generated) {
+    workflowStep.classList.add('active');
+    generateBtn.textContent = '실행안 재생성';
+    const docTotal = operator.docs.required.length + operator.docs.optional.length;
+    workflowResult.textContent = `${state.region} ${state.operator} 실행안 생성 완료 · 문서 ${docTotal}건 · 지원센터 ${region.supportCenters.length}개소 · 우선 실행안 1건이 아래에 갱신되었습니다.`;
+  } else {
+    workflowStep.classList.remove('active');
+    generateBtn.textContent = '실행안 생성';
+    workflowResult.textContent = '지역과 운영 유형을 선택한 뒤 실행안 생성 버튼을 누르세요. 생성되면 아래 문서 패키지와 지원센터 카드가 현재 조건에 맞게 갱신됩니다.';
+  }
 
   // Density class
   const isCompact = state.density === 'compact';
@@ -1578,6 +1749,13 @@ function toggleTheme() {
     state.theme === 'light' ? '라이트 모드' : '다크 모드';
 }
 
+function generatePlan() {
+  state.generated = true;
+  localStorage.setItem('gfr_generated', '1');
+  updateAll();
+  document.getElementById('doc-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 /* ──────────────────────────────────────────────────────────────
    INIT
 ────────────────────────────────────────────────────────────── */
@@ -1606,7 +1784,9 @@ function init() {
 
   // Theme button
   document.getElementById('theme-btn').addEventListener('click', toggleTheme);
-  document.getElementById('primary-cta').addEventListener('click', () => {
+  document.getElementById('primary-cta').addEventListener('click', generatePlan);
+  document.getElementById('generate-btn').addEventListener('click', generatePlan);
+  document.getElementById('jump-docs-btn').addEventListener('click', () => {
     document.getElementById('doc-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
