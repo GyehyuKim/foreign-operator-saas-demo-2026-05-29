@@ -518,9 +518,23 @@ button {
   border: 1px dashed var(--border);
   border-radius: var(--radius);
   padding: 10px 12px;
+  transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
 }
 
 .workflow-result strong { color: var(--text-1); }
+
+.workflow-result.is-active {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--text-1);
+  transform: translateY(-1px);
+}
+
+.workflow-result.is-active strong { color: var(--accent-text); }
+
+.panel.is-highlighted {
+  box-shadow: 0 0 0 2px var(--accent-bg), var(--shadow);
+}
 
 /* ─────────────────────────────────────────────
    SUMMARY CARDS
@@ -1753,7 +1767,17 @@ function generatePlan() {
   state.generated = true;
   localStorage.setItem('gfr_generated', '1');
   updateAll();
-  document.getElementById('doc-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const panel = document.getElementById('doc-panel');
+  const workflowResult = document.getElementById('workflow-result');
+  panel.classList.add('is-highlighted');
+  workflowResult.classList.add('is-active');
+  window.setTimeout(() => {
+    panel.classList.remove('is-highlighted');
+    workflowResult.classList.remove('is-active');
+  }, 1400);
+
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ──────────────────────────────────────────────────────────────
