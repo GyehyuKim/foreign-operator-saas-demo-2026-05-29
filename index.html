@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>외국인 주거 운영 인텔리전스</title>
+<style>
+/* ─────────────────────────────────────────────
+   DESIGN TOKENS
+───────────────────────────────────────────── */
+:root {
+  --bg:            #f4f3ef;
+  --surface:       #ffffff;
+  --surface-alt:   #f9f8f5;
+  --border:        #dedad3;
+  --border-subtle: #eceae4;
+  --text-1:        #17160e;
+  --text-2:        #5c5a53;
+  --text-3:        #9a9790;
+  --accent:        #1b3fa0;
+  --accent-bg:     #eef2ff;
+  --accent-text:   #1b3fa0;
+  --pos:           #166534;
+  --pos-bg:        #f0fdf4;
+  --warn:          #92400e;
+  --warn-bg:       #fffbeb;
+  --neg:           #991b1b;
+  --neg-bg:        #fef2f2;
+  --sidebar-w:     210px;
+  --radius:        6px;
+  --radius-lg:     10px;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:        0 2px 8px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.05);
+  --font:          system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:          'SF Mono', 'Cascadia Mono', 'Consolas', monospace;
+}
+
+[data-theme="dark"] {
+  --bg:            #0e0d0b;
+  --surface:       #18170f;
+  --surface-alt:   #1f1e15;
+  --border:        #2c2a22;
+  --border-subtle: #22211a;
+  --text-1:        #f0ede4;
+  --text-2:        #9e9b91;
+  --text-3:        #5c5a52;
+  --accent:        #6b8ef5;
+  --accent-bg:     #1a2244;
+  --accent-text:   #93aeff;
+  --pos:           #4ade80;
+  --pos-bg:        #052e16;
+  --warn:          #fbbf24;
+  --warn-bg:       #1c1400;
+  --neg:           #f87171;
+  --neg-bg:        #200a0a;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.3);
+  --shadow:        0 2px 8px rgba(0,0,0,.4);
+}
+
+/* ─────────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 14px; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-1);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* ─────────────────────────────────────────────
+   LAYOUT
+───────────────────────────────────────────── */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: 1fr;
+  min-height: 100vh;
+}
+
+/* ─────────────────────────────────────────────
+   SIDEBAR
+───────────────────────────────────────────── */
+.sidebar {
+  background: var(--surface-alt);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.brand-name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: var(--text-2);
+  display: block;
+}
+
+.brand-sub {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+  display: block;
+}
+
+.sidebar-section {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sidebar-section:last-child { border-bottom: none; }
+
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* Radio group */
+.radio-group { display: flex; flex-direction: column; gap: 2px; }
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background .12s;
+  user-select: none;
+}
+
+.radio-item:hover { background: var(--surface-alt); }
+
+.radio-item.active {
+  background: var(--accent-bg);
+  color: var(--accent-text);
+}
+
+.radio-item input[type="radio"] { display: none; }
+
+.radio-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .12s;
+}
+
+.radio-item.active .radio-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.radio-item.active .radio-dot::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.radio-label {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.radio-meta {
+  font-size: 11px;
+  color: var(--text-3);
+  line-height: 1;
+  margin-top: 1px;
+}
+
+/* Source chips */
+.source-chips { display: flex; flex-direction: column; gap: 4px; }
+
+.source-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all .12s;
+  font-size: 11px;
+  color: var(--text-2);
+  text-align: left;
+}
+
+.source-chip.active {
+  border-color: var(--accent-bg);
+  background: var(--accent-bg);
+  color: var(--accent-text);
+}
+
+.source-chip:hover { border-color: var(--accent); }
+
+.chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  transition: background .12s;
+}
+
+.source-chip.active .chip-dot { background: var(--accent); }
+
+.chip-org {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Density toggle */
+.density-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.density-btn {
+  flex: 1;
+  padding: 6px 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: all .12s;
+}
+
+.density-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ─────────────────────────────────────────────
+   MAIN AREA
+───────────────────────────────────────────── */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Top bar */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-breadcrumb {
+  font-size: 13px;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb-sep { color: var(--text-3); }
+
+.breadcrumb-active {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+.theme-btn {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  padding: 5px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: all .12s;
+}
+
+.theme-btn:hover {
+  color: var(--text-1);
+  border-color: var(--text-2);
+}
+
+.theme-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Content wrapper */
+.content {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Hero panel */
+.hero-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hero-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 8px;
+}
+
+.hero-title {
+  font-size: 22px;
+  line-height: 1.35;
+  letter-spacing: -.03em;
+  color: var(--text-1);
+  font-weight: 780;
+  max-width: 62ch;
+}
+
+.hero-title strong { color: var(--accent-text); font-weight: 800; }
+
+.hero-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-top: 8px;
+  max-width: 72ch;
+}
+
+.hero-meta {
+  min-width: 210px;
+  text-align: right;
+}
+
+.hero-note {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin-top: 10px;
+  max-width: 26ch;
+}
+
+.hero-cta-row { display: flex; justify-content: flex-end; }
+
+/* ─────────────────────────────────────────────
+   SUMMARY CARDS
+───────────────────────────────────────────── */
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: padding .2s;
+}
+
+.summary-row .metric-card:first-child,
+.summary-row .metric-card:nth-child(2) {
+  box-shadow: var(--shadow);
+}
+
+.metric-card.compact { padding: 14px 16px; }
+
+.metric-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.metric-header.compact { margin-bottom: 8px; }
+
+.metric-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.metric-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.badge-pos { background: var(--pos-bg); color: var(--pos); }
+.badge-warn { background: var(--warn-bg); color: var(--warn); }
+.badge-neg { background: var(--neg-bg); color: var(--neg); }
+.badge-accent { background: var(--accent-bg); color: var(--accent-text); }
+
+.metric-value {
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: 1;
+  color: var(--text-1);
+  margin-bottom: 10px;
+}
+
+.metric-card.compact .metric-value { font-size: 34px; }
+
+.metric-unit {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text-3);
+}
+
+/* Score bar */
+.score-bar-wrap {
+  margin-bottom: 8px;
+}
+
+.score-bar-track {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .4s cubic-bezier(.25,.46,.45,.94);
+}
+
+.score-bar-fill.demand { background: var(--accent); }
+.score-bar-fill.gap-high { background: var(--neg); }
+.score-bar-fill.gap-mid { background: var(--warn); }
+.score-bar-fill.gap-low { background: var(--pos); }
+
+.metric-sub {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 6px;
+  transition: opacity .2s;
+}
+
+.compact .metric-sub { display: none; }
+
+/* Action card */
+.action-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  transition: padding .2s;
+}
+
+.action-card.compact { padding: 14px 16px; }
+
+.action-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-1);
+  line-height: 1.45;
+  margin-top: 8px;
+}
+
+.compact .action-text { font-size: 13px; margin-top: 6px; }
+
+/* ─────────────────────────────────────────────
+   CONTENT GRID
+───────────────────────────────────────────── */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  grid-template-rows: auto auto;
+  gap: 12px;
+}
+
+.grid-full { grid-column: 1 / -1; }
+
+/* ─────────────────────────────────────────────
+   PANEL BASE
+───────────────────────────────────────────── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.panel-head {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.panel-count {
+  font-size: 11px;
+  color: var(--text-3);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.panel-body { padding: 16px 18px; }
+
+/* ─────────────────────────────────────────────
+   DOCUMENT PACKAGE
+───────────────────────────────────────────── */
+.doc-intro {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.doc-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 8px;
+  margin-top: 14px;
+}
+
+.doc-section-label:first-of-type { margin-top: 0; }
+
+.doc-list { display: flex; flex-direction: column; gap: 6px; }
+
+.doc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-alt);
+  transition: border-color .12s;
+}
+
+.doc-item:hover { border-color: var(--border); }
+
+.doc-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  cursor: pointer;
+  transition: all .12s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-item.checked .doc-check {
+  background: var(--pos);
+  border-color: var(--pos);
+}
+
+.doc-item.checked .doc-check::after {
+  content: '';
+  width: 9px;
+  height: 5px;
+  border-left: 1.5px solid #fff;
+  border-bottom: 1.5px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.doc-info { flex: 1; min-width: 0; }
+
+.doc-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-1);
+  line-height: 1.3;
+}
+
+.doc-item.checked .doc-name {
+  color: var(--text-3);
+  text-decoration: line-through;
+}
+
+.doc-issuer {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+.doc-req {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.doc-req.required { background: var(--neg-bg); color: var(--neg); }
+.doc-req.optional { background: var(--surface-alt); color: var(--text-3); }
+
+/* ─────────────────────────────────────────────
+   SUPPORT CENTERS
+───────────────────────────────────────────── */
+.center-list { display: flex; flex-direction: column; gap: 8px; }
+
+.center-item {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-alt);
+}
+
+.center-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  line-height: 1.2;
+}
+
+.center-district {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+.center-services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.center-tag {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--accent-bg);
+  color: var(--accent-text);
+}
+
+.coverage-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.coverage-status.good { background: var(--pos-bg); color: var(--pos); }
+.coverage-status.mid { background: var(--warn-bg); color: var(--warn); }
+.coverage-status.poor { background: var(--neg-bg); color: var(--neg); }
+
+.cov-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────
+   DATA LINEAGE
+───────────────────────────────────────────── */
+.lineage-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lineage-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 120px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-alt);
+  font-size: 12px;
+  transition: opacity .2s, background .12s;
+}
+
+.lineage-row.inactive {
+  opacity: .4;
+  background: var(--bg);
+}
+
+.lineage-name { font-weight: 500; color: var(--text-1); }
+.lineage-org { color: var(--text-3); font-size: 11px; }
+
+.lineage-metrics { display: flex; flex-wrap: wrap; gap: 3px; }
+
+.lineage-metric {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--accent-bg);
+  color: var(--accent-text);
+}
+
+.lineage-row.inactive .lineage-metric {
+  background: var(--border-subtle);
+  color: var(--text-3);
+}
+
+.lineage-head {
+  display: grid;
+  grid-template-columns: 1fr 120px 120px;
+  gap: 8px;
+  padding: 0 12px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* ─────────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────────── */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 14px 24px;
+  font-size: 11px;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-note { max-width: 680px; line-height: 1.6; }
+
+.footer-note strong { color: var(--text-2); font-weight: 600; }
+
+.footer-version { flex-shrink: 0; font-variant-numeric: tabular-nums; }
+
+/* ─────────────────────────────────────────────
+   MOBILE
+───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .sidebar {
+    height: auto;
+    position: static;
+    overflow: visible;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-sections-mobile {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+  }
+
+  .summary-row { grid-template-columns: 1fr 1fr; }
+
+  .metric-card:last-child { grid-column: 1 / -1; }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content { padding: 16px; }
+}
+
+@media (max-width: 560px) {
+  .summary-row { grid-template-columns: 1fr; }
+  .metric-card:last-child { grid-column: auto; }
+}
+
+/* ─────────────────────────────────────────────
+   TRANSITIONS
+───────────────────────────────────────────── */
+.metric-value,
+.score-bar-fill,
+.coverage-status,
+.center-list,
+.doc-list {
+  transition: all .25s ease;
+}
+
+/* Hero CTA */
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 9px 18px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  border-radius: var(--radius);
+  transition: opacity .12s;
+  white-space: nowrap;
+}
+
+.hero-cta:hover { opacity: .82; }
+
+.hero-cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  opacity: .82;
+}
+
+/* KPI explanatory caption */
+.kpi-caption {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.6;
+  padding: 0 2px;
+  margin-top: -6px;
+}
+
+.kpi-caption strong { color: var(--text-1); font-weight: 600; }
+
+/* Focus states */
+.radio-item:focus-visible,
+.source-chip:focus-visible,
+.density-btn:focus-visible,
+.doc-check:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+</style>
+</head>
+
+<body>
+<div class="app" id="app">
+
+  <!-- ─────── SIDEBAR ─────── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-name">주거 운영 인텔리전스</span>
+      <span class="brand-sub">경기도 외국인 주거 수요 분석</span>
+    </div>
+
+    <!-- Region selector -->
+    <div class="sidebar-section">
+      <span class="section-label">지역 선택</span>
+      <div class="radio-group" id="region-group">
+        <!-- injected by JS -->
+      </div>
+    </div>
+
+    <!-- Operator type -->
+    <div class="sidebar-section">
+      <span class="section-label">운영 유형</span>
+      <div class="radio-group" id="operator-group">
+        <!-- injected by JS -->
+      </div>
+    </div>
+
+    <!-- Data source toggles -->
+    <div class="sidebar-section">
+      <span class="section-label">데이터 소스</span>
+      <div class="source-chips" id="source-chips">
+        <!-- injected by JS -->
+      </div>
+    </div>
+
+    <!-- Density toggle -->
+    <div class="sidebar-section">
+      <span class="section-label">표시 밀도</span>
+      <div class="density-toggle">
+        <button class="density-btn active" data-density="comfortable" id="den-comfortable">여유</button>
+        <button class="density-btn" data-density="compact" id="den-compact">간결</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─────── MAIN ─────── -->
+  <main class="main">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-breadcrumb">
+        <span>경기도</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-active" id="crumb-region">안산시</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-active" id="crumb-operator">고시원·쉐어하우스</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="theme-btn" id="theme-btn" aria-label="테마 전환">라이트 모드</button>
+      </div>
+      </header>
+
+      <div class="content">
+
+        <section class="hero-panel" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <div class="hero-kicker">오늘의 판단</div>
+            <h1 class="hero-title" id="hero-title">--</h1>
+            <p class="hero-desc" id="hero-desc">--</p>
+          </div>
+          <div class="hero-meta">
+            <div class="hero-cta-row">
+              <button class="hero-cta" id="primary-cta" type="button">문서 패키지 시작</button>
+            </div>
+            <div class="hero-note" id="hero-note">--</div>
+          </div>
+        </section>
+
+        <!-- Summary cards -->
+        <section class="summary-row" id="summary-row">
+
+        <!-- Demand score card -->
+        <div class="metric-card" id="card-demand">
+          <div class="metric-header" id="demand-header">
+            <span class="metric-label">수요 점수</span>
+            <span class="metric-badge badge-accent" id="demand-badge">--</span>
+          </div>
+          <div class="metric-value" id="demand-value">--<span class="metric-unit">/100</span></div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track">
+              <div class="score-bar-fill demand" id="demand-bar" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="metric-sub" id="demand-sub"></div>
+        </div>
+
+        <!-- Coverage gap card -->
+        <div class="metric-card" id="card-gap">
+          <div class="metric-header" id="gap-header">
+            <span class="metric-label">커버리지 공백</span>
+            <span class="metric-badge" id="gap-badge">--</span>
+          </div>
+          <div class="metric-value" id="gap-value">--<span class="metric-unit">/100</span></div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track">
+              <div class="score-bar-fill" id="gap-bar" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="metric-sub" id="gap-sub"></div>
+        </div>
+
+        <!-- Recommended action card -->
+        <div class="metric-card action-card" id="card-action">
+          <div class="metric-header">
+            <span class="metric-label">우선 실행 제안</span>
+            <span class="metric-badge badge-accent">권장</span>
+          </div>
+          <div class="action-text" id="action-text">--</div>
+          <div class="metric-sub" id="action-sub"></div>
+        </div>
+
+      </section>
+
+      <p class="kpi-caption" id="kpi-caption">--</p>
+
+      <!-- Content grid -->
+      <div class="content-grid">
+
+        <!-- Document package -->
+        <div class="panel" id="doc-panel">
+          <div class="panel-head">
+            <span class="panel-title">문서 패키지</span>
+            <span class="panel-count" id="doc-count">-- 건</span>
+          </div>
+          <div class="panel-body" id="doc-body">
+            <!-- injected by JS -->
+          </div>
+        </div>
+
+        <!-- Support centers -->
+        <div class="panel" id="center-panel">
+          <div class="panel-head">
+            <span class="panel-title">지원센터 커버리지</span>
+            <span class="panel-count" id="center-count">-- 개소</span>
+          </div>
+          <div class="panel-body" id="center-body">
+            <!-- injected by JS -->
+          </div>
+        </div>
+
+        <!-- Data lineage -->
+        <div class="panel grid-full" id="lineage-panel">
+          <div class="panel-head">
+            <span class="panel-title">데이터 출처</span>
+            <span class="panel-count">7개 공공 데이터셋</span>
+          </div>
+          <div class="panel-body">
+            <div class="lineage-head">
+              <span>데이터셋</span>
+              <span>제공 기관</span>
+              <span>기여 지표</span>
+            </div>
+            <div class="lineage-grid" id="lineage-grid">
+              <!-- injected by JS -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /.content -->
+
+    <footer>
+      <span class="footer-note">
+        <strong>데이터 고지.</strong> 이 데모의 수요 점수·커버리지 공백은 공공 데이터셋 구조를 기반으로 산출한 <strong>예시 수치</strong>입니다. 실제 서비스에서는 경기데이터드림·법무부·KOSIS API에 연동하여 정기 갱신됩니다. 개인 식별 정보는 수집·저장하지 않습니다.
+      </span>
+      <span class="footer-version">데모 v0.1 &mdash; 2026-05-29</span>
+    </footer>
+
+  </main>
+</div><!-- /.app -->
+
+<script>
+/* ──────────────────────────────────────────────────────────────
+   DATA MODEL
+────────────────────────────────────────────────────────────── */
+const REGIONS = {
+  '안산시': {
+    foreignPop: 87420,
+    e9Workers: 24300,
+    growthRate: '+4.2%',
+    topNationality: '중국·조선족, 베트남',
+    scores: { '고시원·쉐어하우스': 88, '원룸·장기임대': 82, '단기숙박업': 61 },
+    coverageGap: 41,
+    coverageLabel: '양호',
+    coverageClass: 'good',
+    supportCenters: [
+      { name: '안산시 외국인주민센터', district: '단원구', services: ['체류·등록', '통번역', '법률상담'] },
+      { name: '경기외국인력지원센터 안산지소', district: '단원구', services: ['E-9 지원', '고충처리'] },
+      { name: '안산다문화가족지원센터', district: '상록구', services: ['가족통합', '한국어 교육'] },
+    ],
+  },
+  '화성시': {
+    foreignPop: 52100,
+    e9Workers: 31200,
+    growthRate: '+9.7%',
+    topNationality: '베트남, 캄보디아',
+    scores: { '고시원·쉐어하우스': 76, '원룸·장기임대': 71, '단기숙박업': 58 },
+    coverageGap: 73,
+    coverageLabel: '취약',
+    coverageClass: 'poor',
+    supportCenters: [
+      { name: '화성시 외국인주민지원센터', district: '병점동', services: ['체류', '통번역'] },
+    ],
+  },
+  '수원시': {
+    foreignPop: 48300,
+    e9Workers: 11400,
+    growthRate: '+1.8%',
+    topNationality: '중국, 베트남',
+    scores: { '고시원·쉐어하우스': 64, '원룸·장기임대': 70, '단기숙박업': 69 },
+    coverageGap: 35,
+    coverageLabel: '충분',
+    coverageClass: 'good',
+    supportCenters: [
+      { name: '수원시 외국인복지센터', district: '권선구', services: ['통합지원', '법률', '통번역'] },
+      { name: '경기도 외국인인권지원센터', district: '팔달구', services: ['인권상담', '피해지원'] },
+      { name: '수원이주민지원센터', district: '장안구', services: ['생활지원', '한국어 교육'] },
+    ],
+  },
+  '시흥시': {
+    foreignPop: 41800,
+    e9Workers: 18700,
+    growthRate: '+6.1%',
+    topNationality: '중국·조선족, 캄보디아',
+    scores: { '고시원·쉐어하우스': 72, '원룸·장기임대': 68, '단기숙박업': 55 },
+    coverageGap: 56,
+    coverageLabel: '미흡',
+    coverageClass: 'mid',
+    supportCenters: [
+      { name: '시흥시 외국인주민복지센터', district: '정왕동', services: ['체류', '생활지원', '통번역'] },
+      { name: '시흥외국인력지원센터', district: '정왕동', services: ['E-9', '고충처리'] },
+    ],
+  },
+  '부천시': {
+    foreignPop: 38600,
+    e9Workers: 9800,
+    growthRate: '+2.3%',
+    topNationality: '중국·한족, 베트남',
+    scores: { '고시원·쉐어하우스': 61, '원룸·장기임대': 65, '단기숙박업': 63 },
+    coverageGap: 49,
+    coverageLabel: '보통',
+    coverageClass: 'mid',
+    supportCenters: [
+      { name: '부천시 외국인복지관', district: '원미구', services: ['통합지원', '상담'] },
+      { name: '부천다문화가족지원센터', district: '소사구', services: ['가족', '한국어 교육'] },
+    ],
+  },
+};
+
+const OPERATORS = {
+  '고시원·쉐어하우스': {
+    desc: '다중이용업소 형태의 공유 주거',
+    docs: {
+      required: [
+        { name: '다중이용업소 영업 신고서', issuer: '관할 소방서' },
+        { name: '소방시설 완비증명서', issuer: '관할 소방서' },
+        { name: '건축물 용도 확인서 (기숙사·고시원)', issuer: '시군구청' },
+        { name: '외국인 입주자 체류자격 확인 기록부', issuer: '운영자 자체 관리' },
+      ],
+      optional: [
+        { name: '임차인 정보 제공 동의서 (다국어)', issuer: '운영자 자체' },
+        { name: '생활규칙 안내문 (다국어)', issuer: '운영자 자체' },
+      ],
+    },
+    action: '다중이용업소 신고를 선행하고, 외국인 입주자 체류자격 확인 기록부 체계를 구축하세요.',
+    actionSub: '소방·건축 법령상 의무 이행 여부가 입주자 유치보다 선행됩니다.',
+  },
+  '원룸·장기임대': {
+    desc: '12개월 이상 장기 임대 주거',
+    docs: {
+      required: [
+        { name: '표준 임대차 계약서 (다국어 병기)', issuer: '법무부 양식 기반' },
+        { name: '부동산 임대업 사업자등록증', issuer: '관할 세무서' },
+        { name: '외국인 등록증 사본 수령 확인서', issuer: '운영자 자체 관리' },
+      ],
+      optional: [
+        { name: '전입신고 안내문 (다국어)', issuer: '운영자 자체' },
+        { name: '퇴거 절차 안내문', issuer: '운영자 자체' },
+        { name: '임대보증금 반환 확인서', issuer: '운영자 자체' },
+      ],
+    },
+    action: '다국어 임대차 계약서를 표준화하고 체류자격 확인 루틴을 수립하세요.',
+    actionSub: '계약 시 외국인 등록증 확인 및 보관이 임차인 분쟁 예방의 핵심입니다.',
+  },
+  '단기숙박업': {
+    desc: '30일 미만 단기 체류 시설',
+    docs: {
+      required: [
+        { name: '숙박업 신고증', issuer: '시군구청' },
+        { name: '위생교육 이수증명서', issuer: '한국관광공사 또는 지자체' },
+        { name: '외국인 숙박자 인적사항 기록부', issuer: '운영자 자체 (출입국관리법 의무)' },
+        { name: '화재보험 가입증명서', issuer: '보험사' },
+      ],
+      optional: [
+        { name: '객실 안전수칙 (다국어)', issuer: '운영자 자체' },
+        { name: '요금 안내문 (다국어)', issuer: '운영자 자체' },
+      ],
+    },
+    action: '외국인 숙박자 기록부 의무 이행을 점검하고 위생교육 갱신 일정을 확인하세요.',
+    actionSub: '출입국관리법상 외국인 숙박자 인적사항 기록은 미이행 시 과태료 대상입니다.',
+  },
+};
+
+const SOURCES = [
+  { id: 'gyeonggi-age', label: '등록외국인 연령별 현황 기본정보', org: '경기데이터드림', metrics: ['수요 점수'], weight: 0.20 },
+  { id: 'gyeonggi-mart', label: '시군분석마트외국인기본', org: '경기데이터드림', metrics: ['추이 보정'], weight: 0.10 },
+  { id: 'welfare-center', label: '외국인 주민(복지)센터 현황', org: '경기데이터드림', metrics: ['커버리지 공백'], weight: 0.15 },
+  { id: 'moj-monthly', label: '월별 등록외국인 현황', org: '법무부', metrics: ['트렌드 보정'], weight: 0.10 },
+  { id: 'moj-district', label: '시군구별 거주 현황', org: '법무부', metrics: ['수요 점수'], weight: 0.20 },
+  { id: 'moj-visa', label: '체류자격별 현황', org: '법무부', metrics: ['유형 추천'], weight: 0.15 },
+  { id: 'kosis-e9', label: 'E-9 외국인 근로자 수 (행정구역/업종별)', org: 'KOSIS', metrics: ['산업 수요'], weight: 0.10 },
+];
+
+/* ──────────────────────────────────────────────────────────────
+   STATE
+────────────────────────────────────────────────────────────── */
+const state = {
+  region: localStorage.getItem('gfr_region') || '안산시',
+  operator: localStorage.getItem('gfr_operator') || '고시원·쉐어하우스',
+  theme: localStorage.getItem('gfr_theme') || 'light',
+  density: localStorage.getItem('gfr_density') || 'comfortable',
+  enabledSources: new Set(SOURCES.map(s => s.id)),
+  checkedDocs: new Set(),
+};
+
+/* ──────────────────────────────────────────────────────────────
+   COMPUTE SCORES
+────────────────────────────────────────────────────────────── */
+function computeScores() {
+  const region = REGIONS[state.region];
+  const baseScore = region.scores[state.operator];
+
+  // Adjust based on disabled sources
+  let disabledWeight = 0;
+  SOURCES.forEach(src => {
+    if (!state.enabledSources.has(src.id)) {
+      disabledWeight += src.weight;
+    }
+  });
+
+  const demandScore = Math.max(0, Math.round(baseScore * (1 - disabledWeight * 0.6)));
+
+  let coverageGap = region.coverageGap;
+  if (!state.enabledSources.has('welfare-center')) coverageGap = null;
+
+  return { demandScore, coverageGap };
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RENDER HELPERS
+────────────────────────────────────────────────────────────── */
+function scoreLabel(score) {
+  if (score >= 80) return { text: '높음', cls: 'badge-pos' };
+  if (score >= 60) return { text: '중간', cls: 'badge-accent' };
+  return { text: '낮음', cls: 'badge-warn' };
+}
+
+function gapLabel(gap) {
+  if (gap >= 65) return { text: '취약', cls: 'badge-neg', barCls: 'gap-high' };
+  if (gap >= 45) return { text: '미흡', cls: 'badge-warn', barCls: 'gap-mid' };
+  return { text: '양호', cls: 'badge-pos', barCls: 'gap-low' };
+}
+
+function numFmt(n) {
+  return n.toLocaleString('ko-KR');
+}
+
+/* ──────────────────────────────────────────────────────────────
+   BUILD SIDEBAR
+────────────────────────────────────────────────────────────── */
+function buildRegionGroup() {
+  const group = document.getElementById('region-group');
+  group.innerHTML = '';
+  Object.keys(REGIONS).forEach(key => {
+    const r = REGIONS[key];
+    const active = key === state.region;
+    const el = document.createElement('label');
+    el.className = 'radio-item' + (active ? ' active' : '');
+    el.setAttribute('tabindex', '0');
+    el.innerHTML = `
+      <input type="radio" name="region" value="${key}" ${active ? 'checked' : ''}>
+      <span class="radio-dot"></span>
+      <span>
+        <span class="radio-label">${key}</span>
+        <span class="radio-meta">${numFmt(r.foreignPop)}명 · ${r.growthRate}</span>
+      </span>`;
+    el.addEventListener('click', () => selectRegion(key));
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') selectRegion(key); });
+    group.appendChild(el);
+  });
+}
+
+function buildOperatorGroup() {
+  const group = document.getElementById('operator-group');
+  group.innerHTML = '';
+  Object.keys(OPERATORS).forEach(key => {
+    const op = OPERATORS[key];
+    const active = key === state.operator;
+    const el = document.createElement('label');
+    el.className = 'radio-item' + (active ? ' active' : '');
+    el.setAttribute('tabindex', '0');
+    el.innerHTML = `
+      <input type="radio" name="operator" value="${key}" ${active ? 'checked' : ''}>
+      <span class="radio-dot"></span>
+      <span>
+        <span class="radio-label">${key}</span>
+        <span class="radio-meta">${op.desc}</span>
+      </span>`;
+    el.addEventListener('click', () => selectOperator(key));
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') selectOperator(key); });
+    group.appendChild(el);
+  });
+}
+
+function buildSourceChips() {
+  const container = document.getElementById('source-chips');
+  container.innerHTML = '';
+  SOURCES.forEach(src => {
+    const active = state.enabledSources.has(src.id);
+    const chip = document.createElement('button');
+    chip.className = 'source-chip' + (active ? ' active' : '');
+    chip.setAttribute('data-id', src.id);
+    chip.setAttribute('aria-pressed', active);
+    chip.innerHTML = `
+      <span class="chip-dot"></span>
+      <span>${src.label}</span>
+      <span class="chip-org">${src.org}</span>`;
+    chip.addEventListener('click', () => toggleSource(src.id));
+    container.appendChild(chip);
+  });
+}
+
+/* ──────────────────────────────────────────────────────────────
+   UPDATE MAIN CONTENT
+────────────────────────────────────────────────────────────── */
+function updateAll() {
+  const region = REGIONS[state.region];
+  const operator = OPERATORS[state.operator];
+  const { demandScore, coverageGap } = computeScores();
+
+  // Breadcrumb
+  document.getElementById('crumb-region').textContent = state.region;
+  document.getElementById('crumb-operator').textContent = state.operator;
+
+  // Demand card
+  const dLbl = scoreLabel(demandScore);
+  document.getElementById('demand-value').innerHTML = `${demandScore}<span class="metric-unit">/100</span>`;
+  document.getElementById('demand-bar').style.width = demandScore + '%';
+  const demandBadge = document.getElementById('demand-badge');
+  demandBadge.textContent = dLbl.text;
+  demandBadge.className = 'metric-badge ' + dLbl.cls;
+  document.getElementById('demand-sub').textContent =
+    `등록 외국인 ${numFmt(region.foreignPop)}명 · E-9 근로자 ${numFmt(region.e9Workers)}명 · 주요 국적: ${region.topNationality}`;
+
+  // Coverage gap card
+  if (coverageGap !== null) {
+    const gLbl = gapLabel(coverageGap);
+    document.getElementById('gap-value').innerHTML = `${coverageGap}<span class="metric-unit">/100</span>`;
+    document.getElementById('gap-bar').style.width = coverageGap + '%';
+    document.getElementById('gap-bar').className = 'score-bar-fill ' + gLbl.barCls;
+    const gapBadge = document.getElementById('gap-badge');
+    gapBadge.textContent = region.coverageLabel;
+    gapBadge.className = 'metric-badge ' + gLbl.cls;
+    document.getElementById('gap-sub').textContent =
+      `지원센터 ${region.supportCenters.length}개소 · 인구 대비 커버리지 지수 기준`;
+  } else {
+    document.getElementById('gap-value').innerHTML = `–<span class="metric-unit">/100</span>`;
+    document.getElementById('gap-bar').style.width = '0%';
+    document.getElementById('gap-badge').textContent = '데이터 비활성';
+    document.getElementById('gap-badge').className = 'metric-badge';
+    document.getElementById('gap-sub').textContent = '외국인주민센터 현황 데이터를 활성화하면 계산됩니다.';
+  }
+
+  // Action card
+  document.getElementById('action-text').textContent = operator.action;
+  document.getElementById('action-sub').textContent = operator.actionSub;
+
+  // Hero summary + CTA context
+  document.getElementById('hero-title').innerHTML = `${state.region} ${state.operator}는 <strong>수요 ${demandScore}점</strong>입니다.`;
+  document.getElementById('hero-desc').textContent =
+    `등록 외국인 ${numFmt(region.foreignPop)}명과 E-9 근로자 ${numFmt(region.e9Workers)}명 지표를 함께 보고, ${coverageGap !== null ? `커버리지 공백 ${coverageGap}점` : '커버리지 공백은 일부 소스 비활성으로 보수 산정'}을 기준으로 우선순위를 정합니다.`;
+  document.getElementById('hero-note').textContent = coverageGap !== null
+    ? `지원센터 ${region.supportCenters.length}개소 기준으로 현재 ${region.coverageLabel} 구간입니다. 문서 패키지부터 시작하면 운영 준비도를 빠르게 끌어올릴 수 있습니다.`
+    : '외국인 주민(복지)센터 현황이 꺼져 있어 공백 점수는 보수적으로 계산됩니다.';
+  document.getElementById('kpi-caption').innerHTML =
+    `<strong>왜 지금 이 화면인가?</strong> 수요 점수는 "어디에 먼저 들어가야 하는가"를, 커버리지 공백은 "운영자가 혼자 처리하기 어려운 구간이 어디인가"를 보여줍니다. 아래 문서 패키지는 그 판단을 바로 실행으로 옮기기 위한 체크리스트입니다.`;
+
+  // Density class
+  const isCompact = state.density === 'compact';
+  ['card-demand', 'card-gap', 'card-action'].forEach(id => {
+    document.getElementById(id).classList.toggle('compact', isCompact);
+  });
+  document.querySelectorAll('.metric-header').forEach(el =>
+    el.classList.toggle('compact', isCompact));
+
+  // Docs
+  renderDocs(operator);
+
+  // Support centers
+  renderCenters(region);
+
+  // Data lineage
+  renderLineage();
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RENDER DOCS
+────────────────────────────────────────────────────────────── */
+function renderDocs(operator) {
+  const body = document.getElementById('doc-body');
+  const total = operator.docs.required.length + operator.docs.optional.length;
+  document.getElementById('doc-count').textContent = `${total}건`;
+
+  let html = `<div class="doc-intro">
+    <strong>${state.operator}</strong> 운영에 필요한 권장 서류입니다. 체크박스를 클릭해 준비 현황을 기록하세요.
+  </div>`;
+
+  html += `<div class="doc-section-label">필수 서류</div><div class="doc-list" id="doc-list-required">`;
+  operator.docs.required.forEach((doc, i) => {
+    const key = `${state.operator}_req_${i}`;
+    const checked = state.checkedDocs.has(key);
+    html += `<div class="doc-item${checked ? ' checked' : ''}" data-key="${key}">
+      <div class="doc-check" role="checkbox" aria-checked="${checked}" tabindex="0"></div>
+      <div class="doc-info">
+        <div class="doc-name">${doc.name}</div>
+        <div class="doc-issuer">발급: ${doc.issuer}</div>
+      </div>
+      <span class="doc-req required">필수</span>
+    </div>`;
+  });
+  html += `</div>`;
+
+  html += `<div class="doc-section-label">권장 서류</div><div class="doc-list" id="doc-list-optional">`;
+  operator.docs.optional.forEach((doc, i) => {
+    const key = `${state.operator}_opt_${i}`;
+    const checked = state.checkedDocs.has(key);
+    html += `<div class="doc-item${checked ? ' checked' : ''}" data-key="${key}">
+      <div class="doc-check" role="checkbox" aria-checked="${checked}" tabindex="0"></div>
+      <div class="doc-info">
+        <div class="doc-name">${doc.name}</div>
+        <div class="doc-issuer">발급: ${doc.issuer}</div>
+      </div>
+      <span class="doc-req optional">권장</span>
+    </div>`;
+  });
+  html += `</div>`;
+
+  body.innerHTML = html;
+
+  // Attach check events
+  body.querySelectorAll('.doc-item').forEach(item => {
+    const toggle = () => {
+      const key = item.dataset.key;
+      if (state.checkedDocs.has(key)) state.checkedDocs.delete(key);
+      else state.checkedDocs.add(key);
+      item.classList.toggle('checked');
+      const ch = item.classList.contains('checked');
+      item.querySelector('.doc-check').setAttribute('aria-checked', ch);
+    };
+    item.querySelector('.doc-check').addEventListener('click', toggle);
+    item.querySelector('.doc-check').addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+  });
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RENDER SUPPORT CENTERS
+────────────────────────────────────────────────────────────── */
+function renderCenters(region) {
+  const body = document.getElementById('center-body');
+  document.getElementById('center-count').textContent = `${region.supportCenters.length}개소`;
+
+  const covClass = region.coverageClass;
+  const covMap = { good: '인프라 양호', mid: '인프라 보통', poor: '인프라 취약' };
+
+  let html = `<div class="coverage-status ${covClass}">
+    <span class="cov-dot"></span>
+    <span>${covMap[covClass]} — ${region.coverageLabel}</span>
+  </div>
+  <div class="center-list">`;
+
+  region.supportCenters.forEach(c => {
+    html += `<div class="center-item">
+      <div class="center-name">${c.name}</div>
+      <div class="center-district">${state.region} ${c.district}</div>
+      <div class="center-services">
+        ${c.services.map(s => `<span class="center-tag">${s}</span>`).join('')}
+      </div>
+    </div>`;
+  });
+
+  html += `</div>`;
+  body.innerHTML = html;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RENDER DATA LINEAGE
+────────────────────────────────────────────────────────────── */
+function renderLineage() {
+  const grid = document.getElementById('lineage-grid');
+  grid.innerHTML = '';
+  SOURCES.forEach(src => {
+    const active = state.enabledSources.has(src.id);
+    const row = document.createElement('div');
+    row.className = 'lineage-row' + (active ? '' : ' inactive');
+    row.innerHTML = `
+      <span class="lineage-name">${src.label}</span>
+      <span class="lineage-org">${src.org}</span>
+      <span class="lineage-metrics">
+        ${src.metrics.map(m => `<span class="lineage-metric">${m}</span>`).join('')}
+      </span>`;
+    grid.appendChild(row);
+  });
+}
+
+/* ──────────────────────────────────────────────────────────────
+   STATE ACTIONS
+────────────────────────────────────────────────────────────── */
+function selectRegion(key) {
+  state.region = key;
+  localStorage.setItem('gfr_region', key);
+  buildRegionGroup();
+  updateAll();
+}
+
+function selectOperator(key) {
+  state.operator = key;
+  localStorage.setItem('gfr_operator', key);
+  buildOperatorGroup();
+  updateAll();
+}
+
+function toggleSource(id) {
+  if (state.enabledSources.has(id)) {
+    if (state.enabledSources.size > 1) state.enabledSources.delete(id);
+  } else {
+    state.enabledSources.add(id);
+  }
+  buildSourceChips();
+  updateAll();
+}
+
+function setDensity(d) {
+  state.density = d;
+  localStorage.setItem('gfr_density', d);
+  document.getElementById('den-comfortable').classList.toggle('active', d === 'comfortable');
+  document.getElementById('den-compact').classList.toggle('active', d === 'compact');
+  updateAll();
+}
+
+function toggleTheme() {
+  state.theme = state.theme === 'light' ? 'dark' : 'light';
+  localStorage.setItem('gfr_theme', state.theme);
+  document.documentElement.setAttribute('data-theme', state.theme);
+  document.getElementById('theme-btn').textContent =
+    state.theme === 'light' ? '라이트 모드' : '다크 모드';
+}
+
+/* ──────────────────────────────────────────────────────────────
+   INIT
+────────────────────────────────────────────────────────────── */
+function init() {
+  // Apply persisted theme
+  document.documentElement.setAttribute('data-theme', state.theme);
+  document.getElementById('theme-btn').textContent =
+    state.theme === 'light' ? '라이트 모드' : '다크 모드';
+
+  // Apply persisted density
+  document.getElementById('den-comfortable').classList.toggle('active', state.density === 'comfortable');
+  document.getElementById('den-compact').classList.toggle('active', state.density === 'compact');
+
+  // Validate persisted values
+  if (!REGIONS[state.region]) state.region = '안산시';
+  if (!OPERATORS[state.operator]) state.operator = '고시원·쉐어하우스';
+
+  // Build sidebar
+  buildRegionGroup();
+  buildOperatorGroup();
+  buildSourceChips();
+
+  // Density buttons
+  document.getElementById('den-comfortable').addEventListener('click', () => setDensity('comfortable'));
+  document.getElementById('den-compact').addEventListener('click', () => setDensity('compact'));
+
+  // Theme button
+  document.getElementById('theme-btn').addEventListener('click', toggleTheme);
+  document.getElementById('primary-cta').addEventListener('click', () => {
+    document.getElementById('doc-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // Render content
+  updateAll();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
