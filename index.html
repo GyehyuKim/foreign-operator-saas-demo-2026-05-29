@@ -1056,7 +1056,7 @@ footer {
   <aside class="sidebar">
     <div class="sidebar-brand">
       <span class="brand-name">주거 운영 인텔리전스</span>
-      <span class="brand-sub">경기도 외국인 주거 수요 분석</span>
+      <span class="brand-sub">경기도 외국인 문서 패키지 생성</span>
     </div>
 
     <!-- Region selector -->
@@ -1077,7 +1077,7 @@ footer {
 
     <!-- Data source toggles -->
     <div class="sidebar-section">
-      <span class="section-label">데이터 소스</span>
+      <span class="section-label">참고 데이터</span>
       <div class="source-chips" id="source-chips">
         <!-- injected by JS -->
       </div>
@@ -1130,14 +1130,14 @@ footer {
           <div class="workflow-head">
             <div>
               <div class="workflow-title" id="workflow-title">다음 스텝: 실행안 생성</div>
-              <div class="workflow-desc">지역과 운영 유형을 고른 뒤 버튼을 누르면, 이 조합에 맞는 문서 패키지와 지원센터 커버리지가 생성됩니다.</div>
+              <div class="workflow-desc">지역과 운영 유형을 고른 뒤 버튼을 누르면, 이 조합에 맞는 문서 패키지와 작성 순서가 생성됩니다.</div>
             </div>
           </div>
           <div class="workflow-steps">
             <div class="workflow-step active">
               <div class="step-num">STEP 1</div>
               <strong>지역 선택 완료</strong>
-              <div class="step-copy">현재 선택된 경기도 시군 기준으로 수요가 계산됩니다.</div>
+              <div class="step-copy">선택한 지역에 맞는 관할기관 표기와 안내 문구가 채워집니다.</div>
             </div>
             <div class="workflow-step active">
               <div class="step-num">STEP 2</div>
@@ -1147,47 +1147,47 @@ footer {
             <div class="workflow-step" id="workflow-step-generate">
               <div class="step-num">STEP 3</div>
               <strong>실행안 생성</strong>
-              <div class="step-copy">누르면 문서 패키지, 지원센터 목록, 우선 실행 제안이 한 번에 갱신됩니다.</div>
+              <div class="step-copy">누르면 문서 패키지, 작성 체크리스트, 우선 준비 항목이 한 번에 갱신됩니다.</div>
             </div>
           </div>
           <div class="workflow-actions">
             <button class="workflow-main-btn" id="generate-btn" type="button">실행안 생성</button>
             <button class="workflow-secondary-btn" id="jump-docs-btn" type="button">문서 패키지로 이동</button>
           </div>
-          <div class="workflow-result" id="workflow-result">지역과 운영 유형을 선택한 뒤 <strong>실행안 생성</strong>을 누르세요. 생성되면 아래 문서 패키지와 지원센터 카드가 현재 조건에 맞게 갱신됩니다.</div>
+          <div class="workflow-result" id="workflow-result">지역과 운영 유형을 선택한 뒤 <strong>실행안 생성</strong>을 누르세요. 생성되면 아래 문서 패키지와 작성 순서가 현재 조건에 맞게 갱신됩니다.</div>
         </section>
 
         <!-- Summary cards -->
         <section class="summary-row" id="summary-row">
 
-        <!-- Demand score card -->
-        <div class="metric-card" id="card-demand">
-          <div class="metric-header" id="demand-header">
-            <span class="metric-label">수요 점수</span>
-            <span class="metric-badge badge-accent" id="demand-badge">--</span>
+        <!-- Package completeness card -->
+        <div class="metric-card" id="card-package">
+          <div class="metric-header" id="package-header">
+            <span class="metric-label">문서 패키지 완성도</span>
+            <span class="metric-badge badge-accent" id="package-badge">--</span>
           </div>
-          <div class="metric-value" id="demand-value">--<span class="metric-unit">/100</span></div>
+          <div class="metric-value" id="package-value">--<span class="metric-unit">%</span></div>
           <div class="score-bar-wrap">
             <div class="score-bar-track">
-              <div class="score-bar-fill demand" id="demand-bar" style="width:0%"></div>
+              <div class="score-bar-fill demand" id="package-bar" style="width:0%"></div>
             </div>
           </div>
-          <div class="metric-sub" id="demand-sub"></div>
+          <div class="metric-sub" id="package-sub"></div>
         </div>
 
-        <!-- Coverage gap card -->
-        <div class="metric-card" id="card-gap">
-          <div class="metric-header" id="gap-header">
-            <span class="metric-label">커버리지 공백</span>
-            <span class="metric-badge" id="gap-badge">--</span>
+        <!-- Missing required docs card -->
+        <div class="metric-card" id="card-missing">
+          <div class="metric-header" id="missing-header">
+            <span class="metric-label">미준비 필수서류</span>
+            <span class="metric-badge" id="missing-badge">--</span>
           </div>
-          <div class="metric-value" id="gap-value">--<span class="metric-unit">/100</span></div>
+          <div class="metric-value" id="missing-value">--<span class="metric-unit">건</span></div>
           <div class="score-bar-wrap">
             <div class="score-bar-track">
-              <div class="score-bar-fill" id="gap-bar" style="width:0%"></div>
+              <div class="score-bar-fill" id="missing-bar" style="width:0%"></div>
             </div>
           </div>
-          <div class="metric-sub" id="gap-sub"></div>
+          <div class="metric-sub" id="missing-sub"></div>
         </div>
 
         <!-- Recommended action card -->
@@ -1221,7 +1221,7 @@ footer {
         <!-- Support centers -->
         <div class="panel" id="center-panel">
           <div class="panel-head">
-            <span class="panel-title">지원센터 커버리지</span>
+            <span class="panel-title">연계기관</span>
             <span class="panel-count" id="center-count">-- 개소</span>
           </div>
           <div class="panel-body" id="center-body">
@@ -1252,7 +1252,7 @@ footer {
 
     <footer>
       <span class="footer-note">
-        <strong>데이터 고지.</strong> 이 데모의 수요 점수·커버리지 공백은 공공 데이터셋 구조를 기반으로 산출한 <strong>예시 수치</strong>입니다. 실제 서비스에서는 경기데이터드림·법무부·KOSIS API에 연동하여 정기 갱신됩니다. 개인 식별 정보는 수집·저장하지 않습니다.
+        <strong>데이터 고지.</strong> 이 데모의 문서 패키지는 운영 유형별 공공 서식 구조를 바탕으로 구성한 <strong>예시 패키지</strong>입니다. 실제 서비스에서는 경기데이터드림·법무부·KOSIS API와 관할기관 정보를 연동해 정기 갱신됩니다. 개인 식별 정보는 수집·저장하지 않습니다.
       </span>
       <span class="footer-version">데모 v0.1 &mdash; 2026-05-29</span>
     </footer>
@@ -1393,13 +1393,13 @@ const OPERATORS = {
 };
 
 const SOURCES = [
-  { id: 'gyeonggi-age', label: '등록외국인 연령별 현황 기본정보', org: '경기데이터드림', metrics: ['수요 점수'], weight: 0.20 },
-  { id: 'gyeonggi-mart', label: '시군분석마트외국인기본', org: '경기데이터드림', metrics: ['추이 보정'], weight: 0.10 },
-  { id: 'welfare-center', label: '외국인 주민(복지)센터 현황', org: '경기데이터드림', metrics: ['커버리지 공백'], weight: 0.15 },
-  { id: 'moj-monthly', label: '월별 등록외국인 현황', org: '법무부', metrics: ['트렌드 보정'], weight: 0.10 },
-  { id: 'moj-district', label: '시군구별 거주 현황', org: '법무부', metrics: ['수요 점수'], weight: 0.20 },
-  { id: 'moj-visa', label: '체류자격별 현황', org: '법무부', metrics: ['유형 추천'], weight: 0.15 },
-  { id: 'kosis-e9', label: 'E-9 외국인 근로자 수 (행정구역/업종별)', org: 'KOSIS', metrics: ['산업 수요'], weight: 0.10 },
+  { id: 'gyeonggi-age', label: '등록외국인 연령별 현황 기본정보', org: '경기데이터드림', metrics: ['지역 표기'], weight: 0.20 },
+  { id: 'gyeonggi-mart', label: '시군분석마트외국인기본', org: '경기데이터드림', metrics: ['지역 보정'], weight: 0.10 },
+  { id: 'welfare-center', label: '외국인 주민(복지)센터 현황', org: '경기데이터드림', metrics: ['연계기관'], weight: 0.15 },
+  { id: 'moj-monthly', label: '월별 등록외국인 현황', org: '법무부', metrics: ['현황 참고'], weight: 0.10 },
+  { id: 'moj-district', label: '시군구별 거주 현황', org: '법무부', metrics: ['관할 표기'], weight: 0.20 },
+  { id: 'moj-visa', label: '체류자격별 현황', org: '법무부', metrics: ['서류 추천'], weight: 0.15 },
+  { id: 'kosis-e9', label: 'E-9 외국인 근로자 수 (행정구역/업종별)', org: 'KOSIS', metrics: ['업종 참고'], weight: 0.10 },
 ];
 
 /* ──────────────────────────────────────────────────────────────
@@ -1418,33 +1418,40 @@ const state = {
 /* ──────────────────────────────────────────────────────────────
    COMPUTE SCORES
 ────────────────────────────────────────────────────────────── */
-function computeScores() {
-  const region = REGIONS[state.region];
-  const baseScore = region.scores[state.operator];
+function computePackageMetrics() {
+  const operator = OPERATORS[state.operator];
+  const requiredDocs = operator.docs.required;
+  const optionalDocs = operator.docs.optional;
 
-  // Adjust based on disabled sources
-  let disabledWeight = 0;
-  SOURCES.forEach(src => {
-    if (!state.enabledSources.has(src.id)) {
-      disabledWeight += src.weight;
-    }
-  });
+  const requiredWithKeys = requiredDocs.map((doc, i) => ({
+    doc,
+    key: `${state.operator}_req_${i}`,
+  }));
+  const checkedRequired = requiredWithKeys.filter(item => state.checkedDocs.has(item.key));
+  const missingRequired = requiredWithKeys.filter(item => !state.checkedDocs.has(item.key));
 
-  const demandScore = Math.max(0, Math.round(baseScore * (1 - disabledWeight * 0.6)));
+  const packageReadiness = requiredDocs.length
+    ? Math.round((checkedRequired.length / requiredDocs.length) * 100)
+    : 100;
 
-  let coverageGap = region.coverageGap;
-  if (!state.enabledSources.has('welfare-center')) coverageGap = null;
-
-  return { demandScore, coverageGap };
+  return {
+    packageReadiness,
+    requiredCount: requiredDocs.length,
+    optionalCount: optionalDocs.length,
+    checkedRequiredCount: checkedRequired.length,
+    missingRequiredCount: missingRequired.length,
+    missingRequiredNames: missingRequired.map(item => item.doc.name),
+    activeSourceCount: Array.from(state.enabledSources).length,
+  };
 }
 
 /* ──────────────────────────────────────────────────────────────
    RENDER HELPERS
 ────────────────────────────────────────────────────────────── */
-function scoreLabel(score) {
-  if (score >= 80) return { text: '높음', cls: 'badge-pos' };
-  if (score >= 60) return { text: '중간', cls: 'badge-accent' };
-  return { text: '낮음', cls: 'badge-warn' };
+function packageLabel(score) {
+  if (score === 100) return { text: '완료', cls: 'badge-pos' };
+  if (score >= 50) return { text: '진행중', cls: 'badge-accent' };
+  return { text: '점검 필요', cls: 'badge-warn' };
 }
 
 function gapLabel(gap) {
@@ -1528,54 +1535,53 @@ function buildSourceChips() {
 function updateAll() {
   const region = REGIONS[state.region];
   const operator = OPERATORS[state.operator];
-  const { demandScore, coverageGap } = computeScores();
+  const {
+    packageReadiness,
+    requiredCount,
+    optionalCount,
+    checkedRequiredCount,
+    missingRequiredCount,
+    missingRequiredNames,
+    activeSourceCount,
+  } = computePackageMetrics();
 
   // Breadcrumb
   document.getElementById('crumb-region').textContent = state.region;
   document.getElementById('crumb-operator').textContent = state.operator;
 
-  // Demand card
-  const dLbl = scoreLabel(demandScore);
-  document.getElementById('demand-value').innerHTML = `${demandScore}<span class="metric-unit">/100</span>`;
-  document.getElementById('demand-bar').style.width = demandScore + '%';
-  const demandBadge = document.getElementById('demand-badge');
-  demandBadge.textContent = dLbl.text;
-  demandBadge.className = 'metric-badge ' + dLbl.cls;
-  document.getElementById('demand-sub').textContent =
-    `등록 외국인 ${numFmt(region.foreignPop)}명 · E-9 근로자 ${numFmt(region.e9Workers)}명 · 주요 국적: ${region.topNationality}`;
+  // Package completeness card
+  const pLbl = packageLabel(packageReadiness);
+  document.getElementById('package-value').innerHTML = `${packageReadiness}<span class="metric-unit">%</span>`;
+  document.getElementById('package-bar').style.width = packageReadiness + '%';
+  const packageBadge = document.getElementById('package-badge');
+  packageBadge.textContent = pLbl.text;
+  packageBadge.className = 'metric-badge ' + pLbl.cls;
+  document.getElementById('package-sub').textContent =
+    `필수 ${requiredCount}건 · 권장 ${optionalCount}건 · 참고 데이터 ${activeSourceCount}개 활성`;
 
-  // Coverage gap card
-  if (coverageGap !== null) {
-    const gLbl = gapLabel(coverageGap);
-    document.getElementById('gap-value').innerHTML = `${coverageGap}<span class="metric-unit">/100</span>`;
-    document.getElementById('gap-bar').style.width = coverageGap + '%';
-    document.getElementById('gap-bar').className = 'score-bar-fill ' + gLbl.barCls;
-    const gapBadge = document.getElementById('gap-badge');
-    gapBadge.textContent = region.coverageLabel;
-    gapBadge.className = 'metric-badge ' + gLbl.cls;
-    document.getElementById('gap-sub').textContent =
-      `지원센터 ${region.supportCenters.length}개소 · 인구 대비 커버리지 지수 기준`;
-  } else {
-    document.getElementById('gap-value').innerHTML = `–<span class="metric-unit">/100</span>`;
-    document.getElementById('gap-bar').style.width = '0%';
-    document.getElementById('gap-badge').textContent = '데이터 비활성';
-    document.getElementById('gap-badge').className = 'metric-badge';
-    document.getElementById('gap-sub').textContent = '외국인주민센터 현황 데이터를 활성화하면 계산됩니다.';
-  }
+  // Missing required docs card
+  const missingBadge = document.getElementById('missing-badge');
+  document.getElementById('missing-value').innerHTML = `${missingRequiredCount}<span class="metric-unit">건</span>`;
+  document.getElementById('missing-bar').style.width = requiredCount ? Math.round((missingRequiredCount / requiredCount) * 100) + '%' : '0%';
+  missingBadge.textContent = missingRequiredCount === 0 ? '완료' : '보완';
+  missingBadge.className = 'metric-badge ' + (missingRequiredCount === 0 ? 'badge-pos' : 'badge-warn');
+  document.getElementById('missing-sub').textContent = missingRequiredCount === 0
+    ? '모든 필수 서류가 체크되었습니다.'
+    : `남은 필수 서류: ${missingRequiredNames.slice(0, 2).join(' · ')}${missingRequiredNames.length > 2 ? ' 외 ' + (missingRequiredNames.length - 2) + '건' : ''}`;
 
   // Action card
   document.getElementById('action-text').textContent = operator.action;
   document.getElementById('action-sub').textContent = operator.actionSub;
 
   // Hero summary + CTA context
-  document.getElementById('hero-title').innerHTML = `${state.region} ${state.operator}는 <strong>수요 ${demandScore}점</strong>입니다.`;
+  document.getElementById('hero-title').innerHTML = `${state.region} ${state.operator} <strong>문서 패키지</strong>입니다.`;
   document.getElementById('hero-desc').textContent =
-    `등록 외국인 ${numFmt(region.foreignPop)}명과 E-9 근로자 ${numFmt(region.e9Workers)}명 지표를 함께 보고, ${coverageGap !== null ? `커버리지 공백 ${coverageGap}점` : '커버리지 공백은 일부 소스 비활성으로 보수 산정'}을 기준으로 우선순위를 정합니다.`;
-  document.getElementById('hero-note').textContent = coverageGap !== null
-    ? `지원센터 ${region.supportCenters.length}개소 기준으로 현재 ${region.coverageLabel} 구간입니다. 문서 패키지부터 시작하면 운영 준비도를 빠르게 끌어올릴 수 있습니다.`
-    : '외국인 주민(복지)센터 현황이 꺼져 있어 공백 점수는 보수적으로 계산됩니다.';
+    `필수 ${requiredCount}건과 권장 ${optionalCount}건을 묶고, 체크 상태와 발급기관 정보를 한 번에 정리합니다.`;
+  document.getElementById('hero-note').textContent = state.generated
+    ? `현재 패키지에는 필수 서류 ${checkedRequiredCount}/${requiredCount}건이 체크된 상태입니다. 누르면 다시 정리됩니다.`
+    : `기본 패키지는 필수 ${requiredCount}건 · 권장 ${optionalCount}건입니다. 문서부터 바로 정리할 수 있습니다.`;
   document.getElementById('kpi-caption').innerHTML =
-    `<strong>왜 지금 이 화면인가?</strong> 수요 점수는 "어디에 먼저 들어가야 하는가"를, 커버리지 공백은 "운영자가 혼자 처리하기 어려운 구간이 어디인가"를 보여줍니다. 아래 문서 패키지는 그 판단을 바로 실행으로 옮기기 위한 체크리스트입니다.`;
+    `<strong>왜 지금 이 화면인가?</strong> 이 화면은 지역 수요를 추정하는 화면이 아니라, 운영자가 바로 출력·점검할 수 있는 서류 묶음을 만드는 화면입니다. 아래 문서 패키지는 필수/권장 서류를 한 번에 확인하도록 설계했습니다.`;
 
   const workflowResult = document.getElementById('workflow-result');
   const workflowStep = document.getElementById('workflow-step-generate');
@@ -1584,16 +1590,16 @@ function updateAll() {
     workflowStep.classList.add('active');
     generateBtn.textContent = '실행안 재생성';
     const docTotal = operator.docs.required.length + operator.docs.optional.length;
-    workflowResult.textContent = `${state.region} ${state.operator} 실행안 생성 완료 · 문서 ${docTotal}건 · 지원센터 ${region.supportCenters.length}개소 · 우선 실행안 1건이 아래에 갱신되었습니다.`;
+    workflowResult.textContent = `${state.region} ${state.operator} 문서 패키지 생성 완료 · 문서 ${docTotal}건 · 필수 ${checkedRequiredCount}/${requiredCount}건 체크됨 · 아래 패키지가 갱신되었습니다.`;
   } else {
     workflowStep.classList.remove('active');
     generateBtn.textContent = '실행안 생성';
-    workflowResult.textContent = '지역과 운영 유형을 선택한 뒤 실행안 생성 버튼을 누르세요. 생성되면 아래 문서 패키지와 지원센터 카드가 현재 조건에 맞게 갱신됩니다.';
+    workflowResult.textContent = '지역과 운영 유형을 선택한 뒤 실행안 생성 버튼을 누르세요. 생성되면 아래 문서 패키지와 작성 순서가 현재 조건에 맞게 갱신됩니다.';
   }
 
   // Density class
   const isCompact = state.density === 'compact';
-  ['card-demand', 'card-gap', 'card-action'].forEach(id => {
+  ['card-package', 'card-missing', 'card-action'].forEach(id => {
     document.getElementById(id).classList.toggle('compact', isCompact);
   });
   document.querySelectorAll('.metric-header').forEach(el =>
@@ -1618,7 +1624,7 @@ function renderDocs(operator) {
   document.getElementById('doc-count').textContent = `${total}건`;
 
   let html = `<div class="doc-intro">
-    <strong>${state.operator}</strong> 운영에 필요한 권장 서류입니다. 체크박스를 클릭해 준비 현황을 기록하세요.
+    <strong>${state.operator}</strong> 운영에 필요한 문서 패키지입니다. 체크박스를 클릭해 준비 현황을 기록하세요.
   </div>`;
 
   html += `<div class="doc-section-label">필수 서류</div><div class="doc-list" id="doc-list-required">`;
