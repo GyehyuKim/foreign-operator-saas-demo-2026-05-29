@@ -2408,6 +2408,13 @@ function buildContractSnapshot() {
 function buildStandaloneContractHtml(snapshot) {
   const propertyNamePlain = escapeHtml(snapshot.propertyName).replace(/\n/g, ' ');
   const propertyNameHtml = escapeHtml(snapshot.propertyName).replace(/\n/g, '<br>');
+  const contractSubject = propertyNamePlain.replace(/\s*입주 계약서$/, '').trim() || propertyNamePlain;
+  const noticeDaysValue = Number(snapshot.contract.noticeDays ?? 0);
+  const depositDaysValue = Number(snapshot.contract.depositReturnDays ?? 0);
+  const noticeDaysText = noticeDaysValue > 0 ? `${noticeDaysValue}일 전` : escapeHtml(snapshot.noticeDays);
+  const depositDaysText = depositDaysValue > 0 ? `${depositDaysValue}일 이내` : escapeHtml(snapshot.depositDays);
+  const noticeDaysClause = noticeDaysValue > 0 ? `${noticeDaysValue}일 전까지` : escapeHtml(snapshot.noticeDays);
+  const depositDaysClause = depositDaysValue > 0 ? `${depositDaysValue}일 이내` : escapeHtml(snapshot.depositDays);
   const requiredClausesHtml = snapshot.profile.requiredClauses
     .map((clause, index) => `<p class="clause">${index + 1}. ${escapeHtml(makeClauseText(clause))}</p>`)
     .join('');
@@ -2555,13 +2562,13 @@ function buildStandaloneContractHtml(snapshot) {
     <tr><th>계 약 대 상</th><td colspan="3">${propertyNameHtml}</td></tr>
     <tr><th>주 소</th><td colspan="3">${escapeHtml(snapshot.address)}</td></tr>
     <tr><th>관리자</th><td>${escapeHtml(snapshot.landlordName)}</td><th>입금 계좌</th><td>${escapeHtml(snapshot.bankName)} ${escapeHtml(snapshot.accountNumber)}</td></tr>
-    <tr><th>퇴거 통보</th><td>${escapeHtml(snapshot.noticeDays)}</td><th>보증금 반환</th><td>${escapeHtml(snapshot.depositDays)}</td></tr>
+    <tr><th>퇴거 통보</th><td>${noticeDaysText}</td><th>보증금 반환</th><td>${depositDaysText}</td></tr>
   </table>
 
   <h2 class="article">제1조 (계약기간 및 임대조건)</h2>
-  <p class="clause">① 본 계약은 ${propertyNamePlain}을(를) 대상으로 하며, 시설 운영 및 입실 조건은 계약 당사자 간 합의에 따릅니다.</p>
-  <p class="clause">② 퇴거는 <span class="strong">${escapeHtml(snapshot.noticeDays)}</span> 전에 통보하며, 통보 방식은 서면 또는 문자·메신저 등 기록이 남는 방식으로 합니다.</p>
-  <p class="clause">③ 보증금은 퇴거 후 <span class="strong">${escapeHtml(snapshot.depositDays)}</span> 이내에 반환하며, 원상복구 비용과 미납금은 공제할 수 있습니다.</p>
+  <p class="clause">① 본 계약은 ${contractSubject}에 관한 입실 조건을 대상으로 하며, 시설 운영 및 입실 조건은 계약 당사자 간 합의에 따릅니다.</p>
+  <p class="clause">② 퇴거 예정일 <span class="strong">${noticeDaysText}</span>까지 서면 또는 문자·메신저 등 기록이 남는 방식으로 통보하여야 합니다.</p>
+  <p class="clause">③ 보증금은 퇴거 후 <span class="strong">${depositDaysClause}</span> 반환하며, 원상복구 비용과 미납금은 공제할 수 있습니다.</p>
   <p class="clause">④ 월 임대료, 관리비 및 기타 비용은 별도 약정한 금액과 납부일을 따릅니다.</p>
 
   <h2 class="article">제2조 (임대료 및 환불 규정)</h2>
@@ -2577,7 +2584,7 @@ function buildStandaloneContractHtml(snapshot) {
   <p class="clause">④ 미납금, 공과금, 청소비, 파손·오염 비용은 보증금 또는 환불금에서 공제할 수 있습니다.</p>
 
   <h2 class="article">제3조 (보증금 반환)</h2>
-  <p class="clause">① 보증금은 퇴거 후 영업일 기준 ${escapeHtml(snapshot.depositDays)} 이내에 반환합니다.</p>
+  <p class="clause">① 보증금은 퇴거 후 영업일 기준 ${depositDaysClause}에 반환합니다.</p>
   <p class="clause">② 시설 청소 및 파손·오염에 따른 비용은 실비로 정산합니다.</p>
   <p class="clause">③ 수수료가 발생하는 송금 방식의 경우, 수수료 부담 주체는 별도 약정에 따릅니다.</p>
 
