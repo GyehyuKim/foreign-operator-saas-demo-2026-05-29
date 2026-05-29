@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>외국인 주거 운영 인텔리전스</title>
+<title>문서 커스터마이저</title>
 <style>
 /* ─────────────────────────────────────────────
    DESIGN TOKENS
@@ -2094,7 +2094,7 @@ const CONTRACT_PROFILES = {
       },
     ],
     fieldDefaults: region => ({
-      propertyName: `${region} ○○고시원 입주 계약서`,
+      propertyName: `○○고시원\n입주 계약서`,
       address: `${region} ○○구 ○○로 00`,
       landlordName: '홍길동',
       bankName: '국민은행',
@@ -2181,7 +2181,7 @@ const CONTRACT_PROFILES = {
       },
     ],
     fieldDefaults: region => ({
-      propertyName: `${region} ○○원룸 임대차 계약서`,
+      propertyName: `○○원룸\n임대차 계약서`,
       address: `${region} ○○구 ○○로 00`,
       landlordName: '홍길동',
       bankName: '국민은행',
@@ -2403,13 +2403,15 @@ function buildStandaloneContractHtml(snapshot) {
   const optionalHtml = snapshot.selectedOptional.length
     ? snapshot.selectedOptional.map(clause => `<div class="bullet">${escapeHtml(makeClauseText(clause))}</div>`).join('')
     : '<div class="empty">선택 문구를 켜면 여기에 추가됩니다.</div>';
+  const titleHtml = escapeHtml(snapshot.propertyName).replace(/\n/g, '<br>');
+  const titleText = escapeHtml(snapshot.propertyName).replace(/\n/g, ' ');
 
   return `<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${escapeHtml(snapshot.propertyName)} · HTML 저장본</title>
+<title>${titleText}</title>
 <style>
 :root {
   color-scheme: light;
@@ -2437,28 +2439,11 @@ body {
   margin: 0 auto;
   padding: 32px 20px 40px;
 }
-.kicker {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
 .title {
   margin-top: 6px;
   font-size: 28px;
   line-height: 1.25;
   font-weight: 800;
-}
-.meta {
-  margin-top: 8px;
-  color: var(--text-2);
-  font-size: 13px;
-}
-.note {
-  margin-top: 10px;
-  font-size: 12px;
-  color: var(--text-3);
 }
 .paper {
   margin-top: 18px;
@@ -2515,18 +2500,6 @@ body {
   font-size: 13px;
   color: var(--text-3);
 }
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 14px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: var(--accent-bg);
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 700;
-}
 @media print {
   body { background: #fff; }
   .page { padding: 0; max-width: none; }
@@ -2536,13 +2509,10 @@ body {
 </head>
 <body>
   <main class="page">
-    <div class="kicker">외국인 주거 운영 인텔리전스 · HTML 저장본</div>
-    <div class="title">${escapeHtml(snapshot.propertyName)}</div>
-    <div class="meta">${escapeHtml(snapshot.region)} · ${escapeHtml(snapshot.operator)} · ${escapeHtml(snapshot.toneLabel)}</div>
-    <div class="note">이 파일은 현재 미리보기 상태를 기준으로 저장한 독립형 HTML 문서입니다. 브라우저에서 다시 열 수 있습니다.</div>
+    <div class="title">${titleHtml}</div>
 
     <section class="paper">
-      <div class="paper-title">${escapeHtml(snapshot.propertyName)}</div>
+      <div class="paper-title">${titleHtml}</div>
       <div class="paper-sub">${escapeHtml(snapshot.address)}</div>
 
       <div class="section">
@@ -2563,7 +2533,6 @@ body {
         <div class="list">${optionalHtml}</div>
       </div>
 
-      <div class="badge">문구 톤: ${escapeHtml(snapshot.toneLabel)}</div>
     </section>
   </main>
 </body>
