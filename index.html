@@ -1018,6 +1018,14 @@ button {
   padding: 14px;
 }
 
+.preview-shell-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .preview-title {
   font-size: 13px;
   font-weight: 700;
@@ -1030,6 +1038,50 @@ button {
   color: var(--text-3);
 }
 
+.export-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 600;
+  transition: all .12s;
+}
+
+.export-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+}
+
+.export-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.export-btn.primary:hover {
+  opacity: .9;
+  color: #fff;
+}
+
+.export-help {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
 .preview-paper {
   margin-top: 12px;
   background: var(--surface);
@@ -1037,66 +1089,6 @@ button {
   border-radius: var(--radius);
   padding: 14px;
 }
-
-.preview-heading {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text-1);
-  line-height: 1.35;
-}
-
-.preview-sub {
-  margin-top: 5px;
-  font-size: 11px;
-  color: var(--text-3);
-}
-
-.preview-section { margin-top: 12px; }
-
-.preview-section-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  margin-bottom: 6px;
-}
-
-.preview-line {
-  font-size: 12px;
-  color: var(--text-1);
-  line-height: 1.5;
-  margin-top: 4px;
-}
-
-.preview-line.muted { color: var(--text-2); }
-
-.preview-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.preview-bullet {
-  display: flex;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--text-1);
-  line-height: 1.45;
-}
-
-.preview-bullet::before {
-  content: '•';
-  color: var(--accent);
-  flex-shrink: 0;
-}
-
-.preview-empty {
-  font-size: 12px;
-  color: var(--text-3);
-  padding: 8px 0 2px;
-}
-
 /* ─────────────────────────────────────────────
    DOCUMENT PACKAGE
 ───────────────────────────────────────────── */
@@ -1411,6 +1403,101 @@ footer {
   .metric-card:last-child { grid-column: auto; }
 }
 
+@media print {
+  @page { margin: 12mm; }
+
+  html, body {
+    background: #fff !important;
+    color: #111 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sidebar,
+  .hero-panel,
+  .workflow-panel,
+  .journey-tabs,
+  .journey-help,
+  .summary-row,
+  .kpi-caption,
+  #doc-panel,
+  #center-panel,
+  #lineage-panel,
+  footer,
+  .export-actions,
+  .export-help,
+  .field-grid,
+  .tone-group,
+  .clause-block,
+  .custom-intro,
+  .panel-head,
+  .content-grid > .panel:not(#custom-panel) {
+    display: none !important;
+  }
+
+  .app,
+  .content,
+  .custom-grid,
+  .custom-stack,
+  #custom-panel,
+  #custom-panel .panel-body,
+  #custom-panel .preview-shell,
+  #custom-panel .preview-paper {
+    display: block !important;
+    width: 100% !important;
+    min-height: auto !important;
+  }
+
+  .app {
+    grid-template-columns: 1fr !important;
+  }
+
+  .content {
+    padding: 0 !important;
+  }
+
+  #custom-panel {
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  #custom-panel .panel-body {
+    padding: 0 !important;
+  }
+
+  .custom-grid {
+    display: block !important;
+  }
+
+  .custom-stack {
+    display: none !important;
+  }
+
+  .preview-shell {
+    border: none !important;
+    background: #fff !important;
+    padding: 0 !important;
+  }
+
+  .preview-shell-head {
+    display: block !important;
+  }
+
+  .preview-title,
+  .preview-meta {
+    color: #111 !important;
+  }
+
+  .preview-paper {
+    border: 1px solid #d9d9d9 !important;
+    background: #fff !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
 /* ─────────────────────────────────────────────
    TRANSITIONS
 ───────────────────────────────────────────── */
@@ -1715,8 +1802,17 @@ footer {
             </div>
 
             <div class="preview-shell">
-              <div class="preview-title">실시간 계약서 미리보기</div>
-              <div class="preview-meta" id="custom-preview-meta">--</div>
+              <div class="preview-shell-head">
+                <div>
+                  <div class="preview-title">HTML 미리보기</div>
+                  <div class="preview-meta" id="custom-preview-meta">--</div>
+                </div>
+                <div class="export-actions" aria-label="문서 내보내기">
+                  <button type="button" class="export-btn" id="export-html-btn">HTML 저장</button>
+                  <button type="button" class="export-btn primary" id="export-pdf-btn">PDF 저장</button>
+                </div>
+              </div>
+              <div class="export-help">HTML은 독립 문서로 저장되어 다시 열 수 있고, PDF는 브라우저 인쇄 다이얼로그를 엽니다.</div>
               <div class="preview-paper" id="custom-preview"></div>
             </div>
           </div>
@@ -2258,6 +2354,248 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
+function sanitizeFilenameSegment(value) {
+  return String(value)
+    .trim()
+    .replace(/[\/:*?"<>|]+/g, '-')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^[-.]+|[-.]+$/g, '') || 'document';
+}
+
+function buildContractSnapshot() {
+  const region = REGIONS[state.region] ? state.region : '안산시';
+  const operator = OPERATORS[state.operator] ? state.operator : '고시원·쉐어하우스';
+  const { profile, contract, selections } = ensureCustomizationState(operator, region);
+  const tone = TONE_OPTIONS[state.tone] ? state.tone : 'balanced';
+  const toneLabel = TONE_OPTIONS[tone].label;
+  const selectedOptional = profile.optionalClauses.filter(clause => selections[clause.id]);
+  const propertyName = (contract.propertyName || `${region} ${operator}`).trim();
+  const address = (contract.address || '').trim() || '주소를 입력하세요.';
+  const landlordName = (contract.landlordName || '').trim() || '관리자명 미입력';
+  const bankName = (contract.bankName || '').trim() || '은행명 미입력';
+  const accountNumber = (contract.accountNumber || '').trim() || '계좌번호 미입력';
+  const noticeDays = contract.noticeDays === 0 || contract.noticeDays === '0' ? '당일' : `${contract.noticeDays || '--'}일 전`;
+  const depositDays = contract.depositReturnDays === 0 || contract.depositReturnDays === '0' ? '즉시' : `${contract.depositReturnDays || '--'}일 이내`;
+
+  return {
+    region,
+    operator,
+    tone,
+    toneLabel,
+    profile,
+    contract,
+    selectedOptional,
+    propertyName,
+    address,
+    landlordName,
+    bankName,
+    accountNumber,
+    noticeDays,
+    depositDays,
+  };
+}
+
+function buildStandaloneContractHtml(snapshot) {
+  const requiredHtml = snapshot.profile.requiredClauses
+    .map(clause => `<div class="bullet">${escapeHtml(makeClauseText(clause))}</div>`)
+    .join('');
+  const optionalHtml = snapshot.selectedOptional.length
+    ? snapshot.selectedOptional.map(clause => `<div class="bullet">${escapeHtml(makeClauseText(clause))}</div>`).join('')
+    : '<div class="empty">선택 문구를 켜면 여기에 추가됩니다.</div>';
+
+  return `<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(snapshot.propertyName)} · HTML 저장본</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f4f3ef;
+  --paper: #fff;
+  --paper-alt: #f9f8f5;
+  --border: #dedad3;
+  --border-soft: #eceae4;
+  --text-1: #17160e;
+  --text-2: #5c5a53;
+  --text-3: #9a9790;
+  --accent: #1b3fa0;
+  --accent-bg: #eef2ff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  line-height: 1.5;
+}
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 20px 40px;
+}
+.kicker {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.title {
+  margin-top: 6px;
+  font-size: 28px;
+  line-height: 1.25;
+  font-weight: 800;
+}
+.meta {
+  margin-top: 8px;
+  color: var(--text-2);
+  font-size: 13px;
+}
+.note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.paper {
+  margin-top: 18px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+.paper-title {
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 800;
+}
+.paper-sub {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-3);
+}
+.section {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-soft);
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 8px;
+}
+.line {
+  font-size: 13px;
+  margin-top: 5px;
+}
+.line.muted { color: var(--text-2); }
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.bullet {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+}
+.bullet::before {
+  content: '•';
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.empty {
+  font-size: 13px;
+  color: var(--text-3);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+@media print {
+  body { background: #fff; }
+  .page { padding: 0; max-width: none; }
+  .paper { box-shadow: none; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+  <main class="page">
+    <div class="kicker">외국인 주거 운영 인텔리전스 · HTML 저장본</div>
+    <div class="title">${escapeHtml(snapshot.propertyName)}</div>
+    <div class="meta">${escapeHtml(snapshot.region)} · ${escapeHtml(snapshot.operator)} · ${escapeHtml(snapshot.toneLabel)}</div>
+    <div class="note">이 파일은 현재 미리보기 상태를 기준으로 저장한 독립형 HTML 문서입니다. 브라우저에서 다시 열 수 있습니다.</div>
+
+    <section class="paper">
+      <div class="paper-title">${escapeHtml(snapshot.propertyName)}</div>
+      <div class="paper-sub">${escapeHtml(snapshot.address)}</div>
+
+      <div class="section">
+        <div class="section-label">기본 정보</div>
+        <div class="line">관리자: ${escapeHtml(snapshot.landlordName)}</div>
+        <div class="line">입금 계좌: ${escapeHtml(snapshot.bankName)} ${escapeHtml(snapshot.accountNumber)}</div>
+        <div class="line">퇴거 통보: ${escapeHtml(snapshot.noticeDays)}</div>
+        <div class="line">보증금 반환: ${escapeHtml(snapshot.depositDays)}</div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">필수 문구</div>
+        <div class="list">${requiredHtml}</div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">선택 문구</div>
+        <div class="list">${optionalHtml}</div>
+      </div>
+
+      <div class="badge">문구 톤: ${escapeHtml(snapshot.toneLabel)}</div>
+    </section>
+  </main>
+</body>
+</html>`;
+}
+
+function downloadHtmlExport() {
+  const snapshot = buildContractSnapshot();
+  const html = buildStandaloneContractHtml(snapshot);
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${sanitizeFilenameSegment(snapshot.propertyName)}-${sanitizeFilenameSegment(snapshot.region)}-${sanitizeFilenameSegment(snapshot.operator)}.html`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function printCurrentDocument() {
+  const previousView = state.view;
+  if (previousView !== 'customize') setJourneyView('customize');
+  window.requestAnimationFrame(() => {
+    const restore = () => {
+      if (previousView !== 'customize') setJourneyView(previousView);
+    };
+    window.addEventListener('afterprint', restore, { once: true });
+    window.print();
+  });
+}
+
 function getContractProfile(operator) {
   return CONTRACT_PROFILES[operator] || CONTRACT_PROFILES['고시원·쉐어하우스'];
 }
@@ -2315,12 +2653,10 @@ function numFmt(n) {
 }
 
 function renderCustomization(syncInputs = false) {
-  const region = REGIONS[state.region] ? state.region : '안산시';
-  const operator = OPERATORS[state.operator] ? state.operator : '고시원·쉐어하우스';
-  const { profile, contract, selections } = ensureCustomizationState(operator, region);
+  const snapshot = buildContractSnapshot();
+  const { profile, contract, selectedOptional, region, operator, toneLabel } = snapshot;
+  const selectedOptionalCount = selectedOptional.length;
   const tone = TONE_OPTIONS[state.tone] ? state.tone : 'balanced';
-  const toneLabel = TONE_OPTIONS[tone].label;
-  const selectedOptionalCount = profile.optionalClauses.filter(clause => selections[clause.id]).length;
 
   if (syncInputs) {
     const fieldMap = {
@@ -2359,7 +2695,7 @@ function renderCustomization(syncInputs = false) {
 
   const optionalList = document.getElementById('optional-clause-list');
   optionalList.innerHTML = profile.optionalClauses.map(clause => `
-    <button type="button" class="clause-item${selections[clause.id] ? ' selected' : ''}" data-clause="${clause.id}" aria-pressed="${selections[clause.id] ? 'true' : 'false'}">
+    <button type="button" class="clause-item${selectedOptional.some(item => item.id === clause.id) ? ' selected' : ''}" data-clause="${clause.id}" aria-pressed="${selectedOptional.some(item => item.id === clause.id) ? 'true' : 'false'}">
       <span class="clause-check" aria-hidden="true"></span>
       <div class="clause-copy">
         <div class="clause-name">
@@ -2375,25 +2711,15 @@ function renderCustomization(syncInputs = false) {
   document.getElementById('optional-clause-count').textContent = `${selectedOptionalCount}개 선택`;
   document.getElementById('custom-preview-meta').textContent = `${region} · ${operator} · ${toneLabel}`;
 
-  const propertyName = (contract.propertyName || `${region} ${operator}`).trim();
-  const address = (contract.address || '').trim() || '주소를 입력하세요.';
-  const landlordName = (contract.landlordName || '').trim() || '관리자명 미입력';
-  const bankName = (contract.bankName || '').trim() || '은행명 미입력';
-  const accountNumber = (contract.accountNumber || '').trim() || '계좌번호 미입력';
-  const noticeDays = contract.noticeDays === 0 || contract.noticeDays === '0' ? '당일' : `${contract.noticeDays || '--'}일 전`;
-  const depositDays = contract.depositReturnDays === 0 || contract.depositReturnDays === '0' ? '즉시' : `${contract.depositReturnDays || '--'}일 이내`;
-
-  const selectedOptional = profile.optionalClauses.filter(clause => selections[clause.id]);
-
   document.getElementById('custom-preview').innerHTML = `
-    <div class="preview-heading">${escapeHtml(propertyName)}</div>
-    <div class="preview-sub">${escapeHtml(address)}</div>
+    <div class="preview-heading">${escapeHtml(snapshot.propertyName)}</div>
+    <div class="preview-sub">${escapeHtml(snapshot.address)}</div>
     <div class="preview-section">
       <div class="preview-section-label">기본 정보</div>
-      <div class="preview-line">관리자: ${escapeHtml(landlordName)}</div>
-      <div class="preview-line">입금 계좌: ${escapeHtml(bankName)} ${escapeHtml(accountNumber)}</div>
-      <div class="preview-line">퇴거 통보: ${escapeHtml(noticeDays)}</div>
-      <div class="preview-line">보증금 반환: ${escapeHtml(depositDays)}</div>
+      <div class="preview-line">관리자: ${escapeHtml(snapshot.landlordName)}</div>
+      <div class="preview-line">입금 계좌: ${escapeHtml(snapshot.bankName)} ${escapeHtml(snapshot.accountNumber)}</div>
+      <div class="preview-line">퇴거 통보: ${escapeHtml(snapshot.noticeDays)}</div>
+      <div class="preview-line">보증금 반환: ${escapeHtml(snapshot.depositDays)}</div>
     </div>
     <div class="preview-section">
       <div class="preview-section-label">필수 문구</div>
@@ -2402,14 +2728,13 @@ function renderCustomization(syncInputs = false) {
       </div>
     </div>
     <div class="preview-section">
-    <div class="preview-section-label">선택 문구</div>
-    ${selectedOptional.length
-      ? `<div class="preview-list">${selectedOptional.map(clause => `<div class="preview-bullet">${escapeHtml(makeClauseText(clause))}</div>`).join('')}</div>`
-      : '<div class="preview-empty">선택 문구를 켜면 여기에 추가됩니다.</div>'}
+      <div class="preview-section-label">선택 문구</div>
+      ${selectedOptionalCount
+        ? `<div class="preview-list">${selectedOptional.map(clause => `<div class="preview-bullet">${escapeHtml(makeClauseText(clause))}</div>`).join('')}</div>`
+        : '<div class="preview-empty">선택 문구를 켜면 여기에 추가됩니다.</div>'}
     </div>
-    `;
+  `;
 }
-
 /* ──────────────────────────────────────────────────────────────
    BUILD SIDEBAR
 ────────────────────────────────────────────────────────────── */
@@ -2820,6 +3145,8 @@ function init() {
   document.getElementById('jump-docs-btn').addEventListener('click', () => {
     document.getElementById('doc-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
+  document.getElementById('export-html-btn').addEventListener('click', downloadHtmlExport);
+  document.getElementById('export-pdf-btn').addEventListener('click', printCurrentDocument);
 
   document.getElementById('journey-tabs').addEventListener('click', e => {
     const btn = e.target.closest('.journey-tab');
