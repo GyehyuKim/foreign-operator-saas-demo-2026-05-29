@@ -1088,6 +1088,15 @@ button {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 14px;
+  overflow: hidden;
+}
+
+.contract-preview-frame {
+  display: block;
+  width: 100%;
+  min-height: 1280px;
+  border: 0;
+  background: transparent;
 }
 /* ─────────────────────────────────────────────
    DOCUMENT PACKAGE
@@ -2397,144 +2406,201 @@ function buildContractSnapshot() {
 }
 
 function buildStandaloneContractHtml(snapshot) {
-  const requiredHtml = snapshot.profile.requiredClauses
-    .map(clause => `<div class="bullet">${escapeHtml(makeClauseText(clause))}</div>`)
+  const propertyNamePlain = escapeHtml(snapshot.propertyName).replace(/\n/g, ' ');
+  const propertyNameHtml = escapeHtml(snapshot.propertyName).replace(/\n/g, '<br>');
+  const requiredClausesHtml = snapshot.profile.requiredClauses
+    .map((clause, index) => `<p class="clause">${index + 1}. ${escapeHtml(makeClauseText(clause))}</p>`)
     .join('');
-  const optionalHtml = snapshot.selectedOptional.length
-    ? snapshot.selectedOptional.map(clause => `<div class="bullet">${escapeHtml(makeClauseText(clause))}</div>`).join('')
-    : '<div class="empty">선택 문구를 켜면 여기에 추가됩니다.</div>';
-  const titleHtml = escapeHtml(snapshot.propertyName).replace(/\n/g, '<br>');
-  const titleText = escapeHtml(snapshot.propertyName).replace(/\n/g, ' ');
+  const optionalClausesHtml = snapshot.selectedOptional.length
+    ? snapshot.selectedOptional.map((clause, index) => `<p class="clause indent">${index + 1}. ${escapeHtml(makeClauseText(clause))}</p>`).join('')
+    : '<p class="clause indent">선택 문구를 켜면 여기에 추가됩니다.</p>';
 
   return `<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${titleText}</title>
+<title>입 실 계 약 서</title>
 <style>
-:root {
-  color-scheme: light;
-  --bg: #f4f3ef;
-  --paper: #fff;
-  --paper-alt: #f9f8f5;
-  --border: #dedad3;
-  --border-soft: #eceae4;
-  --text-1: #17160e;
-  --text-2: #5c5a53;
-  --text-3: #9a9790;
-  --accent: #1b3fa0;
-  --accent-bg: #eef2ff;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  background: var(--bg);
-  color: var(--text-1);
-  line-height: 1.5;
-}
-.page {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 32px 20px 40px;
-}
-.title {
-  margin-top: 6px;
-  font-size: 28px;
-  line-height: 1.25;
-  font-weight: 800;
-}
-.paper {
-  margin-top: 18px;
-  background: var(--paper);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.05);
-}
-.paper-title {
-  font-size: 20px;
-  line-height: 1.35;
-  font-weight: 800;
-}
-.paper-sub {
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--text-3);
-}
-.section {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-soft);
-}
-.section-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  margin-bottom: 8px;
-}
-.line {
-  font-size: 13px;
-  margin-top: 5px;
-}
-.line.muted { color: var(--text-2); }
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-.bullet {
-  display: flex;
-  gap: 8px;
-  font-size: 13px;
-}
-.bullet::before {
-  content: '•';
-  color: var(--accent);
-  flex-shrink: 0;
-}
-.empty {
-  font-size: 13px;
-  color: var(--text-3);
-}
-@media print {
-  body { background: #fff; }
-  .page { padding: 0; max-width: none; }
-  .paper { box-shadow: none; border-radius: 0; }
-}
+  * { box-sizing: border-box; }
+  html { background: #e9e9e9; }
+  body {
+    margin: 0;
+    font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+    color: #111;
+    line-height: 1.58;
+    font-size: 10.5pt;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+    background: #d8d4cd;
+  }
+  .sheet {
+    position: relative;
+    overflow: hidden;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 12mm auto;
+    padding: 20mm 18mm;
+    background: #fcfaf4;
+    box-shadow: 0 1px 10px rgba(0,0,0,.12);
+    transform: rotate(-0.12deg);
+  }
+  .sheet::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.01)),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.012) 0 1px, transparent 1px 14px),
+      repeating-linear-gradient(0deg, rgba(0,0,0,.008) 0 1px, transparent 1px 18px);
+    mix-blend-mode: multiply;
+    opacity: .35;
+  }
+  .sheet > * { position: relative; z-index: 1; }
+  h1.doc-title {
+    text-align: center;
+    font-size: 24pt;
+    font-weight: 800;
+    letter-spacing: .28em;
+    margin: 0 0 5mm;
+    padding-bottom: 3mm;
+    border-bottom: 2px double #111;
+  }
+  table.info {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 8mm;
+  }
+  table.info th, table.info td {
+    border: 1px solid #333;
+    padding: 7px 10px;
+    font-size: 10.5pt;
+    vertical-align: middle;
+  }
+  table.info th {
+    background: #f2f2f2;
+    width: 22%;
+    text-align: center;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  table.info td { width: 28%; }
+  h2.article {
+    font-size: 13pt;
+    font-weight: 800;
+    margin: 7mm 0 2mm;
+    padding-bottom: 1mm;
+    border-bottom: 1px solid #999;
+  }
+  p.clause { margin: 1.5mm 0; }
+  p.clause.indent { padding-left: 1.2em; }
+  ol.sub {
+    margin: 1.5mm 0 1.5mm 0;
+    padding-left: 2.2em;
+  }
+  ol.sub li { margin: .8mm 0; }
+  ul.dash {
+    list-style: none;
+    margin: 1.5mm 0;
+    padding-left: 1.2em;
+  }
+  ul.dash li { position: relative; margin: .6mm 0; }
+  ul.dash li::before { content: "－"; position: absolute; left: -1.2em; }
+  table.refund {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2mm 0;
+  }
+  table.refund th, table.refund td {
+    border: 1px solid #333;
+    padding: 6px 8px;
+    font-size: 10pt;
+    text-align: center;
+  }
+  table.refund th { background: #f2f2f2; font-weight: 700; }
+  .strong { font-weight: 800; }
+  .closing {
+    margin-top: 9mm;
+    text-align: center;
+    font-size: 11pt;
+  }
+  .date-line { margin: 7mm 0 9mm; text-align: center; letter-spacing: .05em; }
+  table.sign {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4mm;
+  }
+  table.sign td {
+    border: 1px solid #333;
+    padding: 11px 12px;
+    font-size: 10.5pt;
+  }
+  table.sign td.lbl { background: #f2f2f2; font-weight: 700; width: 22%; white-space: nowrap; }
+  table.sign td.sig { width: 28%; }
+  @media print {
+    html, body { background: #fff; }
+    .sheet { margin: 0; box-shadow: none; width: auto; min-height: auto; }
+    h2.article { break-after: avoid; }
+    table { break-inside: avoid; }
+  }
 </style>
 </head>
 <body>
-  <main class="page">
-    <div class="title">${titleHtml}</div>
+<div class="sheet">
 
-    <section class="paper">
-      <div class="paper-title">${titleHtml}</div>
-      <div class="paper-sub">${escapeHtml(snapshot.address)}</div>
+  <h1 class="doc-title">입 실 계 약 서</h1>
 
-      <div class="section">
-        <div class="section-label">기본 정보</div>
-        <div class="line">관리자: ${escapeHtml(snapshot.landlordName)}</div>
-        <div class="line">입금 계좌: ${escapeHtml(snapshot.bankName)} ${escapeHtml(snapshot.accountNumber)}</div>
-        <div class="line">퇴거 통보: ${escapeHtml(snapshot.noticeDays)}</div>
-        <div class="line">보증금 반환: ${escapeHtml(snapshot.depositDays)}</div>
-      </div>
+  <table class="info">
+    <tr><th>계 약 대 상</th><td colspan="3">${propertyNameHtml}</td></tr>
+    <tr><th>주 소</th><td colspan="3">${escapeHtml(snapshot.address)}</td></tr>
+    <tr><th>관리자</th><td>${escapeHtml(snapshot.landlordName)}</td><th>입금 계좌</th><td>${escapeHtml(snapshot.bankName)} ${escapeHtml(snapshot.accountNumber)}</td></tr>
+    <tr><th>퇴거 통보</th><td>${escapeHtml(snapshot.noticeDays)}</td><th>보증금 반환</th><td>${escapeHtml(snapshot.depositDays)}</td></tr>
+  </table>
 
-      <div class="section">
-        <div class="section-label">필수 문구</div>
-        <div class="list">${requiredHtml}</div>
-      </div>
+  <h2 class="article">제1조 (계약기간 및 임대조건)</h2>
+  <p class="clause">① 본 계약은 ${propertyNamePlain}을(를) 대상으로 하며, 시설 운영 및 입실 조건은 계약 당사자 간 합의에 따릅니다.</p>
+  <p class="clause">② 퇴거는 <span class="strong">${escapeHtml(snapshot.noticeDays)}</span> 전에 통보하며, 통보 방식은 서면 또는 문자·메신저 등 기록이 남는 방식으로 합니다.</p>
+  <p class="clause">③ 보증금은 퇴거 후 <span class="strong">${escapeHtml(snapshot.depositDays)}</span> 이내에 반환하며, 원상복구 비용과 미납금은 공제할 수 있습니다.</p>
+  <p class="clause">④ 월 임대료, 관리비 및 기타 비용은 별도 약정한 금액과 납부일을 따릅니다.</p>
 
-      <div class="section">
-        <div class="section-label">선택 문구</div>
-        <div class="list">${optionalHtml}</div>
-      </div>
+  <h2 class="article">제2조 (임대료 및 환불 규정)</h2>
+  <p class="clause">① 월 임대료는 계약서 또는 별도 안내문에 정한 금액을 적용합니다.</p>
+  <p class="clause">② 임대료는 입실일 기준 매월 동일 일자에 선납하는 것을 원칙으로 합니다.</p>
+  <p class="clause">③ 중도 퇴거 시 환불 기준은 실제 거주 기간과 시설 운영 규정에 따라 정산합니다.</p>
+  <p class="clause indent"><span class="strong">[환불 기준표]</span></p>
+  <table class="refund">
+    <tr><th>거주 기간</th><th>적용 기준</th><th>비고</th></tr>
+    <tr><td>퇴거 통보 미준수</td><td>미통보 기간에 해당하는 비용 공제 가능</td><td>별도 약정 시 우선</td></tr>
+    <tr><td>정상 통보 후 퇴거</td><td>잔여 기간 및 실거주 일수 기준 정산</td><td>상호 확인 후 반환</td></tr>
+  </table>
+  <p class="clause">④ 미납금, 공과금, 청소비, 파손·오염 비용은 보증금 또는 환불금에서 공제할 수 있습니다.</p>
 
-    </section>
-  </main>
+  <h2 class="article">제3조 (보증금 반환)</h2>
+  <p class="clause">① 보증금은 퇴거 후 영업일 기준 ${escapeHtml(snapshot.depositDays)} 이내에 반환합니다.</p>
+  <p class="clause">② 시설 청소 및 파손·오염에 따른 비용은 실비로 정산합니다.</p>
+  <p class="clause">③ 수수료가 발생하는 송금 방식의 경우, 수수료 부담 주체는 별도 약정에 따릅니다.</p>
+
+  <h2 class="article">제4조 (입실자 의무사항)</h2>
+  ${requiredClausesHtml}
+
+  <h2 class="article">제5조 (선택 문구 및 특약)</h2>
+  ${optionalClausesHtml}
+
+  <h2 class="article">제6조 (기타)</h2>
+  <p class="clause">① 본 계약에 명시되지 않은 사항은 관련 법령과 시설 운영 규정에 따릅니다.</p>
+  <p class="clause">② 분쟁이 발생한 경우 상호 협의를 우선하며, 협의가 어려운 경우 관할 법원에 제소할 수 있습니다.</p>
+
+  <p class="closing">위 계약 내용을 모두 확인하고 이에 동의하며 본 계약서에 서명합니다.</p>
+
+  <p class="date-line">계약일 :　＿＿＿＿＿ 년　＿＿＿＿＿ 월　＿＿＿＿＿ 일</p>
+
+  <table class="sign">
+    <tr><td class="lbl">입실자 성명</td><td></td><td class="lbl">(서명)</td><td class="sig"></td></tr>
+    <tr><td class="lbl">원장 성명</td><td>${escapeHtml(snapshot.landlordName)}</td><td class="lbl">(서명)</td><td class="sig"></td></tr>
+  </table>
+
+</div>
 </body>
 </html>`;
 }
@@ -2680,29 +2746,11 @@ function renderCustomization(syncInputs = false) {
   document.getElementById('optional-clause-count').textContent = `${selectedOptionalCount}개 선택`;
   document.getElementById('custom-preview-meta').textContent = `${region} · ${operator} · ${toneLabel}`;
 
-  document.getElementById('custom-preview').innerHTML = `
-    <div class="preview-heading">${escapeHtml(snapshot.propertyName)}</div>
-    <div class="preview-sub">${escapeHtml(snapshot.address)}</div>
-    <div class="preview-section">
-      <div class="preview-section-label">기본 정보</div>
-      <div class="preview-line">관리자: ${escapeHtml(snapshot.landlordName)}</div>
-      <div class="preview-line">입금 계좌: ${escapeHtml(snapshot.bankName)} ${escapeHtml(snapshot.accountNumber)}</div>
-      <div class="preview-line">퇴거 통보: ${escapeHtml(snapshot.noticeDays)}</div>
-      <div class="preview-line">보증금 반환: ${escapeHtml(snapshot.depositDays)}</div>
-    </div>
-    <div class="preview-section">
-      <div class="preview-section-label">필수 문구</div>
-      <div class="preview-list">
-        ${profile.requiredClauses.map(clause => `<div class="preview-bullet">${escapeHtml(makeClauseText(clause))}</div>`).join('')}
-      </div>
-    </div>
-    <div class="preview-section">
-      <div class="preview-section-label">선택 문구</div>
-      ${selectedOptionalCount
-        ? `<div class="preview-list">${selectedOptional.map(clause => `<div class="preview-bullet">${escapeHtml(makeClauseText(clause))}</div>`).join('')}</div>`
-        : '<div class="preview-empty">선택 문구를 켜면 여기에 추가됩니다.</div>'}
-    </div>
-  `;
+  const preview = document.getElementById('custom-preview');
+  const html = buildStandaloneContractHtml(snapshot);
+  preview.innerHTML = '<iframe class="contract-preview-frame" title="계약서 HTML 미리보기" loading="eager"></iframe>';
+  const frame = preview.querySelector('iframe');
+  frame.srcdoc = html;
 }
 /* ──────────────────────────────────────────────────────────────
    BUILD SIDEBAR
