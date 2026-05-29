@@ -133,6 +133,47 @@ button {
 
 .sidebar-section:last-child { border-bottom: none; }
 
+.selection-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.selection-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  background: var(--surface);
+}
+
+.selection-card--primary {
+  background: color-mix(in srgb, var(--accent-bg) 20%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--border-subtle));
+  box-shadow: var(--shadow-sm);
+}
+
+.selection-card--secondary {
+  background: var(--surface-alt);
+}
+
+.selection-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.selection-copy {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text-3);
+}
+
+.selection-copy strong { color: var(--text-1); font-weight: 600; }
+
+.selection-card--secondary .section-label { margin-bottom: 4px; }
+
 .section-label {
   font-size: 10px;
   font-weight: 700;
@@ -1438,20 +1479,30 @@ footer {
       <span class="brand-sub">경기도 외국인 문서 패키지 생성</span>
     </div>
 
-    <!-- Region selector -->
-    <div class="sidebar-section">
-      <span class="section-label">지역 선택</span>
-      <div class="radio-group" id="region-group">
-        <!-- injected by JS -->
+    <div class="sidebar-section selection-stack">
+      <div class="selection-card selection-card--primary">
+        <div class="selection-head">
+          <div>
+            <span class="section-label">업종 선택</span>
+            <div class="selection-copy">문서 패키지 생성의 <strong>기준</strong>이 되는 선택입니다.</div>
+          </div>
+        </div>
+        <div class="radio-group" id="operator-group">
+          <!-- injected by JS -->
+        </div>
       </div>
-      <div class="field-help" style="margin-top:8px;">지역은 수요 점수 계산보다 <strong>관할기관 표기, 지원센터, 안내문 주소</strong>를 맞추기 위한 입력입니다.</div>
-    </div>
 
-    <!-- Operator type -->
-    <div class="sidebar-section">
-      <span class="section-label">운영 유형</span>
-      <div class="radio-group" id="operator-group">
-        <!-- injected by JS -->
+      <div class="selection-card selection-card--secondary">
+        <div class="selection-head">
+          <div>
+            <span class="section-label">시도·시군 선택</span>
+            <div class="selection-copy">관할기관 · 지원센터 · 주소 표기용 <strong>라우팅 입력</strong>입니다.</div>
+          </div>
+        </div>
+        <div class="radio-group" id="region-group">
+          <!-- injected by JS -->
+        </div>
+        <div class="field-help" style="margin-top:8px;">시도·시군은 수요 점수 계산보다 <strong>관할기관 표기, 지원센터, 안내문 주소</strong>를 맞추기 위한 입력입니다.</div>
       </div>
     </div>
 
@@ -1510,19 +1561,19 @@ footer {
           <div class="workflow-head">
             <div>
               <div class="workflow-title" id="workflow-title">다음 스텝: 실행안 생성</div>
-              <div class="workflow-desc">지역과 운영 유형을 고른 뒤 버튼을 누르면, 이 조합에 맞는 문서 패키지와 작성 순서가 생성됩니다.</div>
+              <div class="workflow-desc">업종을 먼저 고르고, 그다음 시도·시군을 지정하면 이 조합에 맞는 문서 패키지와 작성 순서가 생성됩니다.</div>
             </div>
           </div>
           <div class="workflow-steps">
             <div class="workflow-step active">
               <div class="step-num">STEP 1</div>
-              <strong>지역 선택 완료</strong>
-              <div class="step-copy">선택한 지역에 맞는 관할기관 표기와 안내 문구가 채워집니다.</div>
+              <strong>업종 선택 완료</strong>
+              <div class="step-copy">문서 패키지의 기준이 되는 업종을 먼저 정합니다.</div>
             </div>
             <div class="workflow-step active">
               <div class="step-num">STEP 2</div>
-              <strong>운영 유형 선택 완료</strong>
-              <div class="step-copy">고시원·쉐어하우스 / 원룸·장기임대 / 단기숙박업 중 하나를 고릅니다.</div>
+              <strong>시도·시군 선택 완료</strong>
+              <div class="step-copy">관할기관 표기와 지원센터, 주소 표기에 필요한 라우팅 값을 고릅니다.</div>
             </div>
             <div class="workflow-step" id="workflow-step-generate">
               <div class="step-num">STEP 3</div>
@@ -1534,7 +1585,7 @@ footer {
             <button class="workflow-main-btn" id="generate-btn" type="button">실행안 생성</button>
             <button class="workflow-secondary-btn" id="jump-docs-btn" type="button">문서 패키지로 이동</button>
           </div>
-          <div class="workflow-result" id="workflow-result">지역과 운영 유형을 선택한 뒤 <strong>실행안 생성</strong>을 누르세요. 생성되면 아래 문서 패키지와 작성 순서가 현재 조건에 맞게 갱신됩니다.</div>
+          <div class="workflow-result" id="workflow-result">업종과 시도·시군을 선택한 뒤 <strong>실행안 생성</strong>을 누르세요. 생성되면 아래 문서 패키지와 작성 순서가 현재 조건에 맞게 갱신됩니다.</div>
         </section>
 
         <nav class="journey-tabs" id="journey-tabs" aria-label="여정 선택">
@@ -2489,7 +2540,7 @@ function updateAll() {
   } else {
     workflowStep.classList.remove('active');
     generateBtn.textContent = '실행안 생성';
-    workflowResult.textContent = '지역과 운영 유형을 선택한 뒤 실행안 생성 버튼을 누르세요. 생성되면 아래 문서 패키지와 작성 순서가 현재 조건에 맞게 갱신됩니다.';
+    workflowResult.textContent = '업종과 시도·시군을 선택한 뒤 실행안 생성 버튼을 누르세요. 생성되면 아래 문서 패키지와 작성 순서가 현재 조건에 맞게 갱신됩니다.';
   }
 
   // Density class
