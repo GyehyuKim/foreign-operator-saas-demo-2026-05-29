@@ -68,6 +68,13 @@ This note archives the product and UX decisions made while shaping the demo.
 - Local-only notes are not enough.
 - Commit messages and markdown notes should preserve the path of the product decisions.
 
+### 9) Support HTML and PDF export for the generated document
+- The generated contract/document should be previewed in HTML first.
+- Users should be able to:
+  - save a self-contained HTML snapshot
+  - open the browser print dialog to save as PDF
+- Export controls should sit near the preview so the flow stays continuous.
+
 ## Current docs in the repo
 
 - `spec.md` — current product spec
